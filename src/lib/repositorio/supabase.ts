@@ -1,5 +1,6 @@
 import { ErrorNegocio } from '@/lib/http';
 import { supabaseServidor } from '@/lib/supabase/servidor';
+import { normalizar } from '@/modules/catalogo/filtros';
 import type { FichaOrigen, PiezaCatalogo, Producto, Productor, SelloOriginalidad } from '@/types';
 import type { Repositorio } from './tipos';
 
@@ -31,6 +32,10 @@ const aProductor = ({ usuario_id, usuarios, ...r }: FilaProductor): Productor =>
 
 // numeric de Postgres puede llegar como string según el driver; se normaliza aquí
 const aPieza = (r: PiezaCatalogo): PiezaCatalogo => ({ ...r, precio_unitario: Number(r.precio_unitario) });
+
+// la columna busqueda solo sirve para filtrar, por eso no se pide
+const COLUMNAS_CATALOGO =
+  'id, productor_id, nombre, descripcion, categoria, precio_unitario, stock, created_at, ficha_id, nombre_productor, comunidad, estado, pueblo_originario, tecnica, materiales, tiempo_elaboracion, fotografias_urls, historia_pieza, folio_unico';
 
 function fallo(error: { message: string; code?: string } | null, contexto: string): asserts error is null {
   if (error) throw new Error(`${contexto}: ${error.message}`);
@@ -120,25 +125,23 @@ export const repositorioSupabase: Repositorio = {
   },
 
   async catalogo(f) {
-    let q = sb().from('vista_catalogo').select('*').order('created_at', { ascending: false });
+    let q = sb().from('vista_catalogo').select(COLUMNAS_CATALOGO).order('created_at', { ascending: false });
     if (f.categoria) q = q.eq('categoria', f.categoria);
     if (f.estado) q = q.eq('estado', f.estado);
     if (f.pueblo) q = q.ilike('pueblo_originario', f.pueblo);
     if (f.tecnica) q = q.ilike('tecnica', f.tecnica);
     if (f.precioMin !== undefined) q = q.gte('precio_unitario', f.precioMin);
     if (f.precioMax !== undefined) q = q.lte('precio_unitario', f.precioMax);
-    const texto = f.q ? limpiarTexto(f.q) : '';
-    if (texto) {
-      const campos = ['nombre', 'descripcion', 'categoria', 'tecnica', 'materiales', 'comunidad', 'nombre_productor', 'pueblo_originario'];
-      q = q.or(campos.map((c) => `${c}.ilike.*${texto}*`).join(','));
-    }
+    // la columna busqueda ya viene sin acentos y en minúsculas (migración 002)
+    const texto = f.q ? normalizar(limpiarTexto(f.q)) : '';
+    if (texto) q = q.ilike('busqueda', `%${texto}%`);
     const { data, error } = await q.returns<PiezaCatalogo[]>();
     fallo(error, 'Catálogo');
     return (data ?? []).map(aPieza);
   },
 
   async piezasPorId(ids) {
-    const { data, error } = await sb().from('vista_catalogo').select('*').in('id', ids).returns<PiezaCatalogo[]>();
+    const { data, error } = await sb().from('vista_catalogo').select(COLUMNAS_CATALOGO).in('id', ids).returns<PiezaCatalogo[]>();
     fallo(error, 'Piezas del carrito');
     return (data ?? []).map(aPieza);
   },

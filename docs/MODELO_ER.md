@@ -406,3 +406,19 @@ Triggers `trg_bitacora_inmutable` (BEFORE UPDATE OR DELETE) y `trg_bitacora_sin_
 | `fijar_updated_at()` | Trigger | Mantiene `updated_at` en usuarios, productos, fichas y pedidos. |
 | `fotos-piezas` | Bucket de Storage | Fotografías públicas, límite 5 MB y tipos JPG/PNG/WEBP. |
 | RLS | Seguridad | Activado en las 15 tablas sin políticas para `anon`: la única puerta es la API REST del servidor. |
+
+## 6. Reglas extra (archivo 002)
+
+Archivo: [`supabase/migrations/002_reglas_extra.sql`](../supabase/migrations/002_reglas_extra.sql)
+
+Después de terminar las tablas agregué un segundo archivo con reglas para que la base se cuide sola, aunque alguien meta datos sin pasar por la página. No cambia ninguna tabla de la 001, solo agrega cosas encima.
+
+| Qué agregué | Para qué sirve |
+| :--- | :--- |
+| Búsqueda sin acentos | Si alguien escribe "ceramica" encuentra "Cerámica". |
+| Solo productores aprobados publican | Si un productor sigue "pendiente", la base no le deja guardar piezas. |
+| Historial automático de pedidos | Cada vez que un pedido cambia de estado (enviado, entregado...) se anota solo en `seguimiento_pedidos`. |
+| Promedio de estrellas automático | Cuando alguien califica, se recalcula solo el promedio del productor. |
+| Columna `auth_id` en `usuarios` | Queda lista para conectar el inicio de sesión de Supabase (CU-02). |
+| Descripción de cada tabla | Al abrir una tabla en Supabase aparece qué guarda. |
+| Ajustes de seguridad y velocidad | Supabase marca unos avisos si faltan; con esto ya no aparecen. |
