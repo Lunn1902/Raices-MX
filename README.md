@@ -34,7 +34,7 @@ La cuenta de Supabase la creamos después, juntos; no hace falta para empezar.
 
 ## Lo que pide la primera entrega
 
-1. **Modelo E-R implementado.** Está todo en `docs/MODELO_ER.md` (diagrama, explicación de relaciones y diccionario de datos) y en `supabase/migrations/` (el SQL real).
+1. **Modelo E-R implementado.** El diagrama en imagen está en `docs/modelo-er.png` (listo para pegarlo en el reporte) y todo lo demás en `docs/MODELO_ER.md` (diagrama, explicación de relaciones y diccionario de datos) y en `supabase/migrations/` (el SQL real).
 2. **5 casos de uso funcionando.** Elegí los 5 que juntos cubren el flujo completo, desde que el artesano se registra hasta que alguien le compra:
 
 | CU | Qué hace | Dónde se ve |

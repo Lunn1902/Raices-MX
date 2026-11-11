@@ -8,6 +8,12 @@
 
 ## 1. Diagrama E-R
 
+Versión en imagen para el reporte: [`modelo-er.png`](modelo-er.png) · [`modelo-er.svg`](modelo-er.svg) (el SVG no pierde calidad al hacer zoom).
+
+![Modelo entidad-relación de RaicesMX](modelo-er.png)
+
+Versión editable (GitHub la dibuja sola):
+
 ```mermaid
 erDiagram
     USUARIOS ||--o| PERFILES_PRODUCTOR : "especializa (rol productor)"
