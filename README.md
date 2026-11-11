@@ -274,4 +274,4 @@ Para la revisión, cada quien puede explicar un caso de uso completo (su pantall
 - Commits en español y cortos, con el tema entre paréntesis, tipo `(cu-02) agregue el inicio de sesion` o `(base de datos) agregue la tabla de envios`.
 - Nunca suban el `.env.local`.
 
-Cualquier duda me dicen. — Migue
+
