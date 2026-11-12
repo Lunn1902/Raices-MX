@@ -98,7 +98,7 @@ export default function Carrito() {
       <aside className="card h-fit space-y-3">
         <h2 className="font-semibold">Desglose transparente</h2>
         {cotizacion?.pedidos.map((p) => (
-          <div key={p.productor_id} className="rounded-lg bg-maiz p-3 text-sm">
+          <div key={p.productor_id} className="rounded-lg bg-alabastro p-3 text-sm">
             <p className="mb-1 font-medium">{p.nombre_productor}</p>
             <Fila etiqueta="Subtotal piezas" valor={p.subtotal} />
             <Fila etiqueta="Para el productor (90%)" valor={p.montoProductor} destacado />

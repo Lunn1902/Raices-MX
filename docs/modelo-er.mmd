@@ -1,0 +1,172 @@
+%%{init: {"theme":"base","look":"classic","themeVariables":{"background":"#f2f0eb","primaryColor":"#dcead4","primaryTextColor":"#1e3d25","primaryBorderColor":"#2f6b3b","lineColor":"#2f6b3b","secondaryColor":"#e8f1e2","tertiaryColor":"#f2f0eb","mainBkg":"#ffffff","nodeBorder":"#2f6b3b","textColor":"#2b211c","titleColor":"#1e3d25","edgeLabelBackground":"#f2f0eb","attributeBackgroundColorOdd":"#ffffff","attributeBackgroundColorEven":"#f0f6ec","fontFamily":"Segoe UI, Helvetica, Arial, sans-serif"}}}%%
+erDiagram
+    USUARIOS ||--o| PERFILES_PRODUCTOR : "especializa (rol productor)"
+    USUARIOS ||--o| PERFILES_COMPRADOR : "especializa (rol comprador)"
+    PERFILES_PRODUCTOR ||--o{ VERIFICACIONES_PRODUCTOR : "es validado en (CU-01)"
+    USUARIOS ||--o{ VERIFICACIONES_PRODUCTOR : "verifica como promotor (CU-01)"
+    PERFILES_PRODUCTOR ||--o{ PRODUCTOS : "publica (CU-04)"
+    PRODUCTOS ||--|| FICHAS_ORIGEN : "tiene (composicion 1:1)"
+    FICHAS_ORIGEN ||--o| SELLOS_ORIGINALIDAD : "certifica con QR HMAC (CU-05/06)"
+    USUARIOS ||--o{ PEDIDOS : "realiza compra (CU-08/09)"
+    PERFILES_PRODUCTOR ||--o{ PEDIDOS : "recibe orden"
+    PEDIDOS ||--|{ DETALLES_PEDIDO : "contiene"
+    PRODUCTOS ||--o{ DETALLES_PEDIDO : "es referido en"
+    PEDIDOS ||--o| CONTRATOS_B2B : "formaliza lote 30/70 (CU-09)"
+    PEDIDOS ||--o{ PAGOS : "registra cobros"
+    PEDIDOS ||--o| LIQUIDACIONES : "desglosa comision (CU-10)"
+    PERFILES_PRODUCTOR ||--o{ LIQUIDACIONES : "cobra"
+    PEDIDOS ||--o{ SEGUIMIENTO_PEDIDOS : "historial de estados"
+    PEDIDOS ||--o| CALIFICACIONES : "es evaluado (1 a 5)"
+    USUARIOS ||--o{ BITACORA_AUDITORIA : "genera evento (RNF-13)"
+    USUARIOS ||--o{ NOTIFICACIONES : "recibe avisos"
+    PEDIDOS ||--o{ NOTIFICACIONES : "origina el aviso"
+    USUARIOS ||--o{ REPORTES : "solicita reportes"
+
+    USUARIOS {
+        uuid id PK
+        text correo UK
+        text nombre_completo
+        text telefono
+        rol_usuario rol
+        boolean correo_confirmado
+        int intentos_fallidos
+        timestamptz bloqueado_hasta
+    }
+    PERFILES_PRODUCTOR {
+        uuid usuario_id PK, FK
+        text nombre_taller
+        text identificacion_oficial
+        text comunidad
+        text estado
+        text pueblo_originario
+        text tecnica_principal
+        estado_verificacion estado_verificacion
+    }
+    VERIFICACIONES_PRODUCTOR {
+        uuid id PK
+        uuid productor_id FK
+        uuid promotor_id FK
+        estado_verificacion estado
+        text observaciones
+    }
+    PERFILES_COMPRADOR {
+        uuid usuario_id PK, FK
+        text direccion_principal
+        text nombre_empresa
+        text rfc_empresa
+    }
+    PRODUCTOS {
+        uuid id PK
+        uuid productor_id FK
+        text nombre
+        text categoria
+        numeric precio_unitario
+        int stock
+        boolean activo
+    }
+    FICHAS_ORIGEN {
+        uuid id PK
+        uuid producto_id FK, UK
+        text nombre_productor
+        text comunidad
+        text estado
+        text pueblo_originario
+        text tecnica
+        text materiales
+        text tiempo_elaboracion
+        numeric precio_registrado
+        text_array fotografias_urls
+    }
+    SELLOS_ORIGINALIDAD {
+        uuid id PK
+        uuid ficha_origen_id FK, UK
+        text folio_unico UK
+        text firma_hmac
+        boolean activo
+    }
+    PEDIDOS {
+        uuid id PK
+        text folio_pedido UK
+        tipo_pedido tipo
+        uuid comprador_id FK
+        uuid productor_id FK
+        estado_pedido estado
+        numeric subtotal
+        numeric monto_productor
+        numeric monto_comision
+        numeric total
+    }
+    DETALLES_PEDIDO {
+        uuid id PK
+        uuid pedido_id FK
+        uuid producto_id FK
+        int cantidad
+        numeric precio_unitario
+    }
+    CONTRATOS_B2B {
+        uuid id PK
+        uuid pedido_id FK, UK
+        text folio_contrato UK
+        numeric monto_anticipo_30
+        numeric monto_saldo_70
+    }
+    PAGOS {
+        uuid id PK
+        uuid pedido_id FK
+        text tipo_cobro
+        metodo_pago metodo
+        numeric monto
+        estado_pago estado
+    }
+    LIQUIDACIONES {
+        uuid id PK
+        uuid pedido_id FK, UK
+        uuid productor_id FK
+        numeric monto_bruto
+        numeric porcentaje_comision
+        numeric monto_neto_productor
+    }
+    SEGUIMIENTO_PEDIDOS {
+        uuid id PK
+        uuid pedido_id FK
+        estado_pedido estado
+        text nota
+    }
+    CALIFICACIONES {
+        uuid id PK
+        uuid pedido_id FK, UK
+        uuid comprador_id FK
+        uuid productor_id FK
+        smallint puntuacion
+    }
+    BITACORA_AUDITORIA {
+        bigserial id PK
+        uuid usuario_id
+        text accion
+        text entidad
+        text entidad_id
+        jsonb valor_anterior
+        jsonb valor_nuevo
+    }
+    NOTIFICACIONES {
+        uuid id PK
+        uuid usuario_id FK
+        uuid pedido_id FK
+        canal_notificacion canal
+        text tipo
+        text mensaje
+        estado_notificacion estado
+        timestamptz enviado_en
+        timestamptz leido_en
+    }
+    REPORTES {
+        uuid id PK
+        uuid generado_por FK
+        text tipo
+        formato_reporte formato
+        jsonb filtros
+        date periodo_inicio
+        date periodo_fin
+        text url_archivo
+        estado_reporte estado
+    }

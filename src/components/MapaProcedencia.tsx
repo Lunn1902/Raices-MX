@@ -29,9 +29,9 @@ export function MapaProcedencia({ conteos, seleccionado }: { conteos: ConteoEsta
             <Link
               key={e.clave}
               title={titulo}
-              style={{ ...posicion, backgroundColor: `rgb(180 83 42 / ${opacidad})` }}
+              style={{ ...posicion, backgroundColor: `rgb(47 107 59 / ${opacidad})` }}
               href={activo ? '/catalogo' : `/catalogo?estado=${encodeURIComponent(e.nombre)}`}
-              className={`${clase} text-white hover:ring-2 hover:ring-barro-oscuro`}
+              className={`${clase} text-white hover:ring-2 hover:ring-milpa-oscuro`}
             >
               {e.clave}
             </Link>

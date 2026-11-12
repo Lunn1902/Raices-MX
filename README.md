@@ -45,6 +45,8 @@ La cuenta de Supabase la creamos después, juntos; no hace falta para empezar.
 | CU-07 | Catálogo con filtros y mapa por estado | `/catalogo` |
 | CU-08 | Carrito y compra mostrando el 90/10 | `/comprador/carrito` |
 
+> **Entrega 1:** el documento con la trazabilidad clase UML → tabla, las evidencias de las pruebas y el alcance está en [`docs/ENTREGA_1.md`](docs/ENTREGA_1.md).
+
 ---
 
 ## Cómo correrlo (5 minutos)
@@ -84,13 +86,26 @@ Otros comandos:
 5. Esperen un par de minutos a que termine de crearse.
 
 ### 2. Crear las tablas
-1. En el menú de la izquierda, entren a **SQL Editor** → **New query**.
-2. Copien todo el contenido de `supabase/migrations/001_initial_schema.sql`, péguenlo y denle **Run**.
-3. Hagan lo mismo con `supabase/migrations/002_reglas_extra.sql` (son unas reglas que agregué después; abajo explico qué hacen).
-4. Y al final con `supabase/seed.sql` para cargar los datos de prueba.
-5. En **Table Editor** ya deberían ver las 15 tablas con datos de los artesanos de Puebla.
 
-> **Importante:** el orden es 001 → 002 → seed. Si lo corren en otro orden va a marcar error.
+**Opción rápida (recomendada).** Con la cadena de conexión en `SUPABASE_DB_URL` dentro de `.env.local`:
+
+```bash
+npm run db:setup     # aplica 001 → 002 → 003 y carga los datos de prueba
+npm run db:verify    # solo muestra cuántas filas hay en cada tabla
+```
+
+El script es idempotente: anota lo aplicado en `privado.migraciones_aplicadas` y no repite nada. Si un archivo falla, se revierte y se detiene.
+
+**Opción manual.** En el **SQL Editor**, en este orden:
+1. `supabase/migrations/001_initial_schema.sql`
+2. `supabase/migrations/002_reglas_extra.sql`
+3. `supabase/migrations/003_notificaciones_reportes.sql`
+4. `supabase/seed.sql`
+5. `supabase/seed_003_notificaciones_reportes.sql`
+
+En **Table Editor** ya deberían ver las 17 tablas con datos de los artesanos de Puebla.
+
+> **Importante:** el orden es 001 → 002 → 003 → seed → seed_003. Si lo corren en otro orden va a marcar error.
 
 ### 3. Pegar las llaves en el proyecto
 1. En Supabase vayan a **Project Settings** → **API Keys** (o **Data API**).
@@ -103,6 +118,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...                      # la llave "anon" o "publ
 SUPABASE_SERVICE_ROLE_KEY=...                          # la llave "service_role" o "secret"
 QR_HMAC_SECRET=raicesmx-dev-secret
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+SUPABASE_DB_URL=postgresql://postgres.<ref>:<password>@aws-....pooler.supabase.com:5432/postgres  # solo para npm run db:setup
 ```
 
 4. Reinicien `npm run dev`. Si ya no sale la franja amarilla, están conectados a la base real.
@@ -128,10 +144,14 @@ Las carpetas:
 
 ```
 supabase/
-  migrations/001_initial_schema.sql   las 15 tablas, enums, índices, vistas y la función de compra
+  migrations/001_initial_schema.sql   las 15 tablas base, enums, índices, vistas y la función de compra
   migrations/002_reglas_extra.sql     reglas extra que agregué después (ver abajo)
+  migrations/003_notificaciones_reportes.sql  notificaciones y reportes (clases Notificacion y Reporte)
   seed.sql                            datos de prueba de Puebla
+  seed_003_notificaciones_reportes.sql avisos y reportes de ejemplo
+scripts/db-setup.mjs                  aprovisiona la base (migraciones + datos) con npm run db:setup
 docs/MODELO_ER.md                     diagrama E-R y diccionario de datos para el reporte
+docs/ENTREGA_1.md                     trazabilidad UML → tablas, evidencias y alcance de la entrega
 src/
   app/                                páginas y API
     api/v1/                           la API REST (productores, productos, sello-qr, mapa, pedidos, lotes-b2b)
@@ -147,7 +167,7 @@ tests/                                pruebas con Vitest
 
 ## El modelo E-R en corto
 
-Son **15 tablas**. La parte clave (la que hay que explicarle bien a la maestra) es esta cadena:
+Son **17 tablas**. La parte clave (la que hay que explicarle bien a la maestra) es esta cadena:
 
 ```
 productor ──publica──▶ producto ──tiene 1:1──▶ ficha de origen ──certificada por──▶ sello QR
@@ -163,17 +183,18 @@ Cosas que cuida la base de datos por sí sola, aunque alguien se salte la API:
 
 Todo lo demás (cardinalidades, tipos, cada columna) está en `docs/MODELO_ER.md`.
 
-### ¿Por qué hay dos archivos de tablas (001 y 002)?
+### ¿Por qué hay tres archivos de tablas (001, 002 y 003)?
 
-- **La 001** tiene todo el modelo E-R: las 15 tablas con sus relaciones. Es la que cuenta para la entrega.
+- **La 001** tiene el modelo E-R base: las 15 tablas con sus relaciones. Es la que cuenta para la entrega.
 - **La 002** la hice después. No cambia ninguna tabla, solo le agrega reglas para que la base se cuide sola:
   - Que la búsqueda funcione sin acentos ("ceramica" encuentra "Cerámica").
   - Que un productor pendiente no pueda publicar.
   - Que el historial de cada pedido y el promedio de estrellas se llenen solos.
   - Que quede lista una columna para conectar el login de Supabase.
   - Unos ajustes que Supabase pide para que no salgan avisos.
+- **La 003** agrega las dos clases del diagrama UML que faltaban: `notificaciones` y `reportes`. No toca las tablas anteriores.
 
-Así se trabaja normalmente: cuando hay que cambiar algo de la base no se edita el archivo viejo, sino que se agrega uno nuevo (003, 004...). Si alguien necesita agregar una tabla, que haga su `003_...sql`.
+Así se trabaja normalmente: cuando hay que cambiar algo de la base no se edita el archivo viejo, sino que se agrega uno nuevo (004, 005...).
 
 ---
 
@@ -219,7 +240,7 @@ Son 26 pruebas:
 - `tests/sello-qr.test.ts`: que el folio tenga el formato correcto y no se repita, y que la firma detecte si cambian el folio, la comunidad, el pueblo, la técnica o el productor.
 - `tests/comisiones.test.ts`: el ejemplo de $800 → $720 / $80, que el envío no lleve comisión, que no se pierdan centavos, y el ejemplo del lote B2B de 30 piezas de $1,500 (total $38,250, anticipo $11,475, saldo $26,775).
 
-Además, las dos migraciones y el seed los probé en un PostgreSQL local para asegurar que corren sin errores, y que la firma que calcula la base es la misma que la de Node.
+Además, las tres migraciones y los dos seeds los probé contra el proyecto de Supabase del equipo, y la firma que calcula la base es la misma que la de Node.
 
 ---
 
@@ -227,9 +248,9 @@ Además, las dos migraciones y el seed los probé en un PostgreSQL local para as
 
 **Ya está:**
 - Proyecto base con Next.js, TypeScript y Tailwind.
-- Modelo E-R completo en SQL (15 tablas) + mejoras para Supabase + datos de prueba.
+- Modelo E-R completo en SQL (17 tablas) + mejoras para Supabase + datos de prueba.
 - Documento del modelo E-R listo para el reporte.
-- Los 5 casos de uso funcionando, con su API y sus pantallas.
+- Los 5 casos de uso funcionando contra el Supabase del equipo, con su API y sus pantallas.
 - Modo demo para que cualquiera lo pueda correr sin configurar nada.
 - Pruebas unitarias de lo más delicado (firma y dinero).
 - La estructura y el cálculo de lotes B2B (CU-09) ya están listos para continuarlos.
@@ -238,7 +259,7 @@ Además, las dos migraciones y el seed los probé en un PostgreSQL local para as
 
 | Pendiente | Detalle | Por dónde empezar |
 | :--- | :--- | :--- |
-| Crear la cuenta de Supabase | Seguir los pasos de arriba y compartir las llaves por privado, **no por el repo** | Sección "Conectar Supabase" |
+| Configurar Supabase en otra máquina | El proyecto ya existe; cada quien pone sus llaves en `.env.local` y corre `npm run db:verify` | Sección "Conectar Supabase" |
 | **CU-02 · Login** | Ahora mismo el promotor y el comprador son usuarios fijos de prueba (Rosa Elena y Daniela). Hay que meter Supabase Auth, con el bloqueo de 5 intentos / 15 min | `src/lib/supabase/navegador.ts` ya existe; la columna `usuarios.auth_id` ya está |
 | Proteger rutas por rol | Que solo el promotor entre a `/promotor` y solo productores aprobados a publicar | Depende del login |
 | **CU-09 · Lotes B2B** | Pantalla de pedido por lote, contrato en PDF y pago 30/70 | `src/modules/lotes-b2b/`, tablas `contratos_b2b` y `pagos` |
@@ -268,6 +289,7 @@ Para la revisión, cada quien puede explicar un caso de uso completo (su pantall
 
 ## Para trabajar en equipo
 
+- Las fotos del inicio son de Wikimedia Commons con licencia CC BY-SA; autor y enlace de cada una están en [`docs/CREDITOS_IMAGENES.md`](docs/CREDITOS_IMAGENES.md).
 - Antes de empezar: `git pull`.
 - Trabajen en una rama: `git checkout -b feat/cu-02-login` (por ejemplo).
 - Antes de subir: `npm run lint` y `npm test`.

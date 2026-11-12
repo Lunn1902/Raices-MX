@@ -1,0 +1,22 @@
+{
+  "theme": "base",
+  "look": "classic",
+  "themeVariables": {
+    "background": "#f2f0eb",
+    "primaryColor": "#dcead4",
+    "primaryTextColor": "#1e3d25",
+    "primaryBorderColor": "#2f6b3b",
+    "lineColor": "#2f6b3b",
+    "secondaryColor": "#e8f1e2",
+    "tertiaryColor": "#f2f0eb",
+    "mainBkg": "#ffffff",
+    "nodeBorder": "#2f6b3b",
+    "textColor": "#2b211c",
+    "titleColor": "#1e3d25",
+    "edgeLabelBackground": "#f2f0eb",
+    "attributeBackgroundColorOdd": "#ffffff",
+    "attributeBackgroundColorEven": "#f0f6ec",
+    "fontFamily": "Segoe UI, Helvetica, Arial, sans-serif"
+  },
+  "themeCSS": "g.outer-path path { fill: #2f6b3b !important; } .label.name .nodeLabel, .label.name p { color: #ffffff !important; font-size: 14px !important; } .label.name foreignObject { overflow: visible !important; } .row-rect-odd path { fill: #ffffff !important; } .row-rect-even path { fill: #f0f6ec !important; } .label.attribute-name p, .label.attribute-type p, .label.attribute-keys p, .label.attribute-comment p { color: #2b211c !important; } .relationshipLine { stroke: #2f6b3b !important; }"
+}

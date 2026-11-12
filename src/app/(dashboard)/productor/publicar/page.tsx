@@ -61,7 +61,7 @@ export default function PublicarPieza() {
           <Link href={sello.url.replace(/^https?:\/\/[^/]+/, '')} className="btn-sec">
             Probar verificación pública
           </Link>
-          <button className="text-sm text-barro hover:underline" onClick={() => location.reload()}>
+          <button className="text-sm text-milpa hover:underline" onClick={() => location.reload()}>
             Publicar otra pieza
           </button>
         </div>
@@ -147,7 +147,7 @@ export default function PublicarPieza() {
             </p>
           )}
           <Campo etiqueta="9. Fotografía de la pieza" error={err('foto')} ayuda="JPG, PNG o WEBP de máximo 5 MB">
-            <input name="foto" type="file" accept="image/jpeg,image/png,image/webp" className="input file:mr-3 file:rounded file:border-0 file:bg-maiz file:px-3 file:py-1" />
+            <input name="foto" type="file" accept="image/jpeg,image/png,image/webp" className="input file:mr-3 file:rounded file:border-0 file:bg-alabastro file:px-3 file:py-1" />
           </Campo>
           <Campo etiqueta="Historia de la pieza (opcional)">
             <textarea name="historia_pieza" rows={3} className="input" />

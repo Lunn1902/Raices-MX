@@ -37,7 +37,7 @@ export default function PanelPromotor() {
       <p className="mb-4 text-stone-600">Verificación de productores en campo · Rosa Elena Téllez (promotora del piloto Puebla)</p>
       <div className="mb-4 flex gap-2">
         {PESTANAS.map((p) => (
-          <button key={p} onClick={() => setPestana(p)} className={`rounded-full px-4 py-1.5 text-sm capitalize ${pestana === p ? 'bg-barro text-white' : 'bg-white text-stone-700'}`}>
+          <button key={p} onClick={() => setPestana(p)} className={`rounded-full px-4 py-1.5 text-sm capitalize ${pestana === p ? 'bg-milpa text-white' : 'bg-white text-stone-700'}`}>
             {p}
           </button>
         ))}
@@ -71,7 +71,7 @@ export default function PanelPromotor() {
                     onChange={(e) => setNotas({ ...notas, [p.id]: e.target.value })}
                   />
                   <div className="flex gap-2">
-                    <button className="btn flex-1 bg-milpa hover:bg-green-900" onClick={() => resolver(p.id, 'aprobado')}>
+                    <button className="btn flex-1 bg-milpa hover:bg-milpa-oscuro" onClick={() => resolver(p.id, 'aprobado')}>
                       <Check className="size-4" /> Aprobar
                     </button>
                     <button className="btn-sec flex-1 border-red-700 text-red-700 hover:bg-red-50" onClick={() => resolver(p.id, 'rechazado')}>

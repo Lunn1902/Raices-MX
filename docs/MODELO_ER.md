@@ -2,19 +2,27 @@
 
 **Proyecto:** RaicesMX — Plataforma de comercialización directa para productores originarios
 **Equipo 10 · Facultad de Ciencias de la Computación, BUAP · Otoño 2026**
-**Implementación:** [`supabase/migrations/001_initial_schema.sql`](../supabase/migrations/001_initial_schema.sql) · **Datos de prueba:** [`supabase/seed.sql`](../supabase/seed.sql)
+**Implementación:** [`001_initial_schema.sql`](../supabase/migrations/001_initial_schema.sql) · [`002_reglas_extra.sql`](../supabase/migrations/002_reglas_extra.sql) · [`003_notificaciones_reportes.sql`](../supabase/migrations/003_notificaciones_reportes.sql) · **Datos de prueba:** [`seed.sql`](../supabase/seed.sql) · **Aprovisionamiento:** `npm run db:setup`
 
 ---
 
 ## 1. Diagrama E-R
 
-Versión en imagen para el reporte: [`modelo-er.png`](modelo-er.png) · [`modelo-er.svg`](modelo-er.svg) (el SVG no pierde calidad al hacer zoom).
+Versión en imagen para el reporte: [`modelo-er.png`](modelo-er.png) · [`modelo-er.svg`](modelo-er.svg) (el SVG no pierde calidad al hacer zoom). Fuente editable: [`modelo-er.mmd`](modelo-er.mmd).
+
+El diagrama usa la misma paleta del sitio: verde milpa `#2f6b3b` para encabezados, bordes y relaciones; fondo alabastro `#f2f0eb`; texto tinta `#2b211c`; y filas alternadas en blanco y verde muy claro `#f0f6ec`. El tema está en [`mermaid-theme.json`](mermaid-theme.json) y se aplica así:
+
+```bash
+npx -y @mermaid-js/mermaid-cli -i docs/modelo-er.mmd -o docs/modelo-er.png \
+  -b "#f2f0eb" --size 3200 -c docs/mermaid-theme.json
+```
 
 ![Modelo entidad-relación de RaicesMX](modelo-er.png)
 
 Versión editable (GitHub la dibuja sola):
 
 ```mermaid
+%%{init: {"theme":"base","look":"classic","themeVariables":{"background":"#f2f0eb","primaryColor":"#dcead4","primaryTextColor":"#1e3d25","primaryBorderColor":"#2f6b3b","lineColor":"#2f6b3b","secondaryColor":"#e8f1e2","tertiaryColor":"#f2f0eb","mainBkg":"#ffffff","nodeBorder":"#2f6b3b","textColor":"#2b211c","titleColor":"#1e3d25","edgeLabelBackground":"#f2f0eb","attributeBackgroundColorOdd":"#ffffff","attributeBackgroundColorEven":"#f0f6ec","fontFamily":"Segoe UI, Helvetica, Arial, sans-serif"}}}%%
 erDiagram
     USUARIOS ||--o| PERFILES_PRODUCTOR : "especializa (rol productor)"
     USUARIOS ||--o| PERFILES_COMPRADOR : "especializa (rol comprador)"
@@ -34,6 +42,9 @@ erDiagram
     PEDIDOS ||--o{ SEGUIMIENTO_PEDIDOS : "historial de estados"
     PEDIDOS ||--o| CALIFICACIONES : "es evaluado (1 a 5)"
     USUARIOS ||--o{ BITACORA_AUDITORIA : "genera evento (RNF-13)"
+    USUARIOS ||--o{ NOTIFICACIONES : "recibe avisos"
+    PEDIDOS ||--o{ NOTIFICACIONES : "origina el aviso"
+    USUARIOS ||--o{ REPORTES : "solicita reportes"
 
     USUARIOS {
         uuid id PK
@@ -161,6 +172,28 @@ erDiagram
         jsonb valor_anterior
         jsonb valor_nuevo
     }
+    NOTIFICACIONES {
+        uuid id PK
+        uuid usuario_id FK
+        uuid pedido_id FK
+        canal_notificacion canal
+        text tipo
+        text mensaje
+        estado_notificacion estado
+        timestamptz enviado_en
+        timestamptz leido_en
+    }
+    REPORTES {
+        uuid id PK
+        uuid generado_por FK
+        text tipo
+        formato_reporte formato
+        jsonb filtros
+        date periodo_inicio
+        date periodo_fin
+        text url_archivo
+        estado_reporte estado
+    }
 ```
 
 ## 2. Explicación de las relaciones
@@ -184,6 +217,9 @@ erDiagram
 | `pedidos` → `seguimiento_pedidos` | 1 : N | `ON DELETE CASCADE` | Historial de cambios de estado (confirmado → enviado → entregado). |
 | `pedidos` → `calificaciones` | 1 : 0..1 | `UNIQUE` | Una sola calificación por pedido. |
 | `usuarios` → `bitacora_auditoria` | 1 : N | Sin FK (lógica) | La bitácora conserva eventos aunque el usuario se elimine; es inmutable por trigger. |
+| `usuarios` → `notificaciones` | 1 : N | `ON DELETE CASCADE` | Cada aviso pertenece a un usuario; si se borra la cuenta, se borran sus avisos. |
+| `pedidos` → `notificaciones` | 1 : N | `ON DELETE SET NULL` | El aviso sobrevive al pedido, pero deja de apuntar a él. |
+| `usuarios` (administrador) → `reportes` | 1 : N | `ON DELETE SET NULL` | El reporte generado se conserva aunque se borre la cuenta que lo solicitó. |
 
 ## 3. Tipos enumerados
 
@@ -195,6 +231,10 @@ erDiagram
 | `estado_pedido` | `pendiente_aprobacion`, `rechazado_productor`, `expirado`, `pendiente_anticipo`, `confirmado`, `en_produccion`, `enviado`, `entregado`, `cancelado` |
 | `metodo_pago` | `tarjeta`, `spei` |
 | `estado_pago` | `pendiente`, `aprobado`, `rechazado`, `reembolsado` |
+| `canal_notificacion` | `sistema`, `correo`, `sms`, `whatsapp` |
+| `estado_notificacion` | `pendiente`, `enviada`, `fallida`, `leida` |
+| `formato_reporte` | `csv`, `pdf`, `xlsx` |
+| `estado_reporte` | `pendiente`, `generado`, `error` |
 
 ## 4. Diccionario de datos
 
@@ -402,6 +442,32 @@ Convenciones: **PK** llave primaria · **FK** llave foránea · **UK** único ·
 
 Triggers `trg_bitacora_inmutable` (BEFORE UPDATE OR DELETE) y `trg_bitacora_sin_truncate` (BEFORE TRUNCATE) lanzan una excepción: la tabla solo admite `INSERT`.
 
+### 4.16 `notificaciones` (clase Notificacion)
+| Columna | Tipo | Restricciones | Descripción |
+| :--- | :--- | :--- | :--- |
+| id | uuid | PK, default `gen_random_uuid()` | Identificador del aviso. |
+| usuario_id | uuid | FK → usuarios CASCADE, NN, índice | Quién recibe el aviso. |
+| pedido_id | uuid | FK → pedidos SET NULL | Pedido que lo originó; nulo si es un aviso general. |
+| canal | canal_notificacion | NN, default `sistema` | Medio por el que se envía. |
+| tipo | text | NN, CHECK no vacío | Clave del evento (`pedido_confirmado`, `verificacion_aprobada`...). |
+| asunto / mensaje | text | mensaje NN | Texto que ve el usuario. |
+| estado | estado_notificacion | NN, default `pendiente` | Cola de envío y lectura. |
+| enviado_en / leido_en | timestamptz | | Los llena el trigger `trg_notificaciones_fechas` al cambiar de estado. |
+| created_at | timestamptz | NN | |
+
+### 4.17 `reportes` (clase Reporte)
+| Columna | Tipo | Restricciones | Descripción |
+| :--- | :--- | :--- | :--- |
+| id | uuid | PK, default `gen_random_uuid()` | Identificador del reporte. |
+| generado_por | uuid | FK → usuarios SET NULL, índice | Administrador que lo solicitó. |
+| tipo | text | NN, CHECK en ventas/productores/comisiones/auditoria/inventario | Contenido del reporte. |
+| formato | formato_reporte | NN, default `csv` | Formato de exportación. |
+| filtros | jsonb | NN, default `{}` | Filtros aplicados (estado, fechas, tipo de pedido...). |
+| periodo_inicio / periodo_fin | date | CHECK fin ≥ inicio | Ventana del reporte; pueden ir nulas. |
+| url_archivo | text | | Archivo generado en Storage o descarga temporal. |
+| estado | estado_reporte | NN, default `pendiente` | El trigger `trg_reportes_fecha` sella `generado_en` al pasar a `generado`. |
+| created_at / generado_en | timestamptz | | |
+
 ## 5. Objetos adicionales de la base
 
 | Objeto | Tipo | Uso |
@@ -411,9 +477,9 @@ Triggers `trg_bitacora_inmutable` (BEFORE UPDATE OR DELETE) y `trg_bitacora_sin_
 | `crear_pedidos_b2c(comprador, dirección, items, envío)` | Función PL/pgSQL | Compra transaccional: bloquea los productos con `FOR UPDATE` en orden de id, valida existencias, crea un pedido por productor con su detalle, pago, liquidación 90/10, seguimiento y bitácora. Si una pieza no alcanza, revierte todo. |
 | `fijar_updated_at()` | Trigger | Mantiene `updated_at` en usuarios, productos, fichas y pedidos. |
 | `fotos-piezas` | Bucket de Storage | Fotografías públicas, límite 5 MB y tipos JPG/PNG/WEBP. |
-| RLS | Seguridad | Activado en las 15 tablas sin políticas para `anon`: la única puerta es la API REST del servidor. |
+| RLS | Seguridad | Activado en las 17 tablas sin políticas para `anon`: la única puerta es la API REST del servidor. |
 
-## 6. Reglas extra (archivo 002)
+## 6. Reglas extra (archivos 002 y 003)
 
 Archivo: [`supabase/migrations/002_reglas_extra.sql`](../supabase/migrations/002_reglas_extra.sql)
 
@@ -428,3 +494,18 @@ Después de terminar las tablas agregué un segundo archivo con reglas para que 
 | Columna `auth_id` en `usuarios` | Queda lista para conectar el inicio de sesión de Supabase (CU-02). |
 | Descripción de cada tabla | Al abrir una tabla en Supabase aparece qué guarda. |
 | Ajustes de seguridad y velocidad | Supabase marca unos avisos si faltan; con esto ya no aparecen. |
+
+### 6.1 Migración 003: Notificación y Reporte
+
+Archivo: [`supabase/migrations/003_notificaciones_reportes.sql`](../supabase/migrations/003_notificaciones_reportes.sql)
+
+El diagrama de clases UML incluye dos clases que no intervenían en los cinco casos de uso de la primera versión. Se implementaron como entidades propias para que el modelo E-R cubra las 25 clases del diagrama:
+
+| Tabla | Clase UML | Para qué sirve |
+| :--- | :--- | :--- |
+| `notificaciones` | `Notificacion` | Avisos por pedido o por evento (verificación aprobada, pago confirmado) en canal `sistema`, `correo`, `sms` o `whatsapp`. |
+| `reportes` | `Reporte` | Solicitudes de exportación del administrador (ventas, productores, comisiones, auditoría, inventario) en CSV, PDF o XLSX, con filtros y periodo. |
+
+Los triggers `trg_notificaciones_fechas` y `trg_reportes_fecha` sellan `enviado_en`, `leido_en` y `generado_en` sin depender de la API, igual que el resto de las reglas de la 002.
+
+Datos de ejemplo: [`supabase/seed_003_notificaciones_reportes.sql`](../supabase/seed_003_notificaciones_reportes.sql) (3 avisos y 2 reportes del piloto).
