@@ -1,0 +1,635 @@
+% !TEX program = pdflatex
+% =============================================================================
+%  RaicesMX · Proyectos I+D · Equipo 10 · BUAP
+%  ENTREGA 1 EN FORMATO IEEE (una columna)
+%  Documento del modelo E-R implementado y de los 5 casos de uso
+%  implementados en la primera versión del sistema.
+%
+%  ------------------------------------------------------------------
+%  CÓMO USARLO EN OVERLEAF
+%  ------------------------------------------------------------------
+%  1. Proyecto nuevo en Overleaf, compilador pdfLaTeX.
+%  2. Pega todo este contenido en main.tex.
+%  3. Sube las imágenes en una carpeta "figuras/" con estos nombres:
+%        logo-buap.png (o escudo_positivo.png)
+%        modelo-er.png        (diagrama E-R)
+%        cu-01-registro.png   cu-04-publicar.png   cu-06-verificar.png
+%        cu-07-catalogo.png   cu-08-compra.png
+%     Si falta alguna, el documento dibuja un marcador con el nombre y
+%     compila igual.
+%  4. Compila. Listo.
+%
+%  NOTAS
+%  - Hoja tamaño carta (letterpaper), estándar de IEEE.
+%  - Las referencias van numeradas estilo IEEE, pero conservan los datos
+%    completos en formato APA del equipo.
+%  - Portada con la paleta de RaicesMX: alabastro #F2F0EB, verde milpa
+%    #2F6B3B, verde oscuro #24512E, tinta #2B211C, verde claro #B9DCAE.
+% =============================================================================
+
+\documentclass[conference,letterpaper,onecolumn]{IEEEtran}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot,es-noquoting,es-tabla]{babel}
+
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{microtype}
+\usepackage{multirow}
+\usepackage{float}   % [H] deja cada figura exactamente donde se escribe
+\usepackage[hyphens]{url}
+\usepackage{url}
+\usepackage{hyperref}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\definecolor{VerdeMilpa}{HTML}{2F6B3B}
+\definecolor{VerdeOscuro}{HTML}{24512E}
+\definecolor{Alabastro}{HTML}{F2F0EB}
+\definecolor{Tinta}{HTML}{2B211C}
+\definecolor{VerdeClaro}{HTML}{B9DCAE}
+\definecolor{GrisMedio}{HTML}{8A817A}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=VerdeMilpa,
+  urlcolor=VerdeOscuro,
+  citecolor=VerdeMilpa,
+  pdftitle={RaicesMX: modelo E-R implementado y cinco casos de uso},
+  pdfauthor={Equipo 10 - Proyectos I+D - BUAP}
+}
+
+% =============================================================================
+%  DATOS DEL PROYECTO  ·  se editan únicamente aquí
+% =============================================================================
+\newcommand{\Proyecto}{RaicesMX}
+\newcommand{\Materia}{Proyectos I+D}
+\newcommand{\Equipo}{Equipo 10}
+\newcommand{\Titular}{Mtra. S\'anchez Rom\'an Guillermina}
+\newcommand{\Periodo}{Oto\~no 2026}
+\newcommand{\Institucion}{Benem\'erita Universidad Aut\'onoma de Puebla}
+\newcommand{\Facultad}{Facultad de Ciencias de la Computaci\'on}
+% =============================================================================
+%  FIN DE LOS DATOS DEL PROYECTO
+% =============================================================================
+
+% ---------------- Figura con marcador si falta el archivo ----------------
+% Todas las figuras y tablas van con [H] para quedar exactamente donde se
+% escriben (formato de una columna).
+\newcommand{\figura}[4]{%
+  \begin{figure}[H]
+  \centering
+  \IfFileExists{#1}{%
+    \includegraphics[width=#3]{#1}%
+  }{%
+    \begingroup\setlength{\fboxsep}{6pt}%
+    \fcolorbox{GrisMedio}{Alabastro}{%
+      \parbox[c][3.0cm][c]{\dimexpr#3-2\fboxsep-2\fboxrule\relax}{%
+        \centering\color{GrisMedio}\footnotesize
+        \textbf{[ IMAGEN ]}\\[3pt]\texttt{\detokenize{#1}}}%
+    }%
+    \endgroup
+  }
+  \caption{#2}\label{#4}
+  \end{figure}%
+}
+
+\begin{document}
+
+% ============================== PORTADA ==================================
+\pagecolor{Alabastro}
+\thispagestyle{empty}
+
+\noindent{\color{VerdeMilpa}\rule{\textwidth}{3pt}}\\[-6pt]
+\noindent{\color{VerdeClaro}\rule{\textwidth}{1.2pt}}
+
+\vspace{0.22cm}
+
+\begin{center}
+\IfFileExists{figuras/logo-buap.png}{%
+  \includegraphics[width=2.7cm]{figuras/logo-buap.png}%
+}{%
+  \IfFileExists{logo-buap.png}{%
+    \includegraphics[width=2.7cm]{logo-buap.png}%
+  }{%
+    \IfFileExists{escudo_positivo.png}{%
+      \includegraphics[width=2.7cm]{escudo_positivo.png}%
+    }{%
+      \begingroup\setlength{\fboxsep}{6pt}%
+      \fcolorbox{GrisMedio}{white}{\parbox[c][2.2cm][c]{3.4cm}{\centering\color{GrisMedio}\scriptsize LOGO\\BUAP}}%
+      \endgroup
+    }%
+  }%
+}
+
+\vspace{0.22cm}
+{\color{GrisMedio}\small \Institucion\\\Facultad\par}
+{\color{GrisMedio}\scriptsize \Materia\ \textbullet\ \Equipo\ \textbullet\ \Periodo\par}
+\end{center}
+
+\vspace{0.25cm}
+
+\begin{center}
+{\color{VerdeMilpa}\Huge\bfseries \Proyecto\par}
+\vspace{0.15cm}
+{\color{VerdeOscuro}\large
+Comercialización directa para productores originarios mexicanos
+con verificación criptográfica del origen de la pieza\par}
+\vspace{0.25cm}
+{\color{GrisMedio}\normalsize
+Entrega 1: modelo E-R de la base de datos (implementación) y cinco casos
+de uso implementados en la primera versión del sistema\par}
+\end{center}
+
+\vspace{0.22cm}
+
+\begin{center}
+\begingroup
+\setlength{\fboxsep}{10pt}
+\fcolorbox{VerdeMilpa!45}{VerdeMilpa!8}{%
+\begin{minipage}{0.90\textwidth}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}>{\bfseries\color{VerdeMilpa}}l@{\hspace{1.4em}}l@{}}
+Proyecto & \Proyecto, plataforma web progresiva (PWA) de venta directa \\
+Asignatura & \Materia\ (proyecto de software) \\
+Titular & \Titular \\
+Equipo & \Equipo\ (cinco integrantes) \\
+Periodo & \Periodo \\
+Alcance & Modelo E-R implementado y 5 casos de uso en la versión~1.0 \\
+Stack & Next.js 16, React 19, TypeScript, Tailwind CSS, PostgreSQL 15 (Supabase) \\
+\end{tabular}
+\end{minipage}}
+\endgroup
+\end{center}
+
+\vspace{0.22cm}
+
+% =============================================================================
+%  PORTADA · INTEGRANTES (una persona por línea)
+% =============================================================================
+\begin{center}
+\begingroup
+\setlength{\fboxsep}{11pt}
+\fcolorbox{VerdeMilpa!45}{VerdeMilpa!8}{%
+\begin{minipage}{0.82\textwidth}
+\centering
+{\color{VerdeMilpa}\bfseries\small INTEGRANTES}\\[9pt]
+\renewcommand{\arraystretch}{1.55}
+\begin{tabular}{@{}>{\color{VerdeMilpa}\bfseries}l@{\hspace{0.9em}}L{0.58\linewidth}r@{}}
+1 & Ángel Armando Carreño González & 202108258 \\
+2 & Miguel Ángel Hernández Sánchez & 202123950 \\
+3 & Alan Espinoza Flores & 202260523 \\
+4 & Luis Ángel Zacarías Ávila & 202166331 \\
+5 & Adrián Torres Rodríguez & 202163210 \\
+\end{tabular}
+\end{minipage}}
+\endgroup
+\end{center}
+
+\vspace{0.3cm}
+
+\begin{center}
+\begin{minipage}{0.94\textwidth}
+\centering\footnotesize
+\textbf{Contenido:} I. Introducción --- II. Modelo E-R de la base de datos
+(implementación) --- III. Cinco casos de uso implementados en la versión~1.0 ---
+IV. Seguridad de la base --- V. Pruebas --- VI. Conclusiones --- Referencias.
+\end{minipage}
+\end{center}
+
+\vspace{0.6cm}
+
+\begin{center}
+{\color{GrisMedio}\footnotesize
+\Institucion\ \textbullet\ \Facultad\ \textbullet\ \Periodo\par}
+{\color{VerdeMilpa}\small Documento de entrega 1 \textbullet\ Formato IEEE (una columna)\par}
+\end{center}
+
+\noindent{\color{VerdeClaro}\rule{\textwidth}{1.2pt}}\\[-6pt]
+\noindent{\color{VerdeMilpa}\rule{\textwidth}{3pt}}
+
+\nopagecolor
+
+% ============================ ARTÍCULO IEEE ==============================
+\title{\Proyecto: modelo entidad-relación implementado y cinco casos de uso
+en la primera versión del sistema}
+
+\author{%
+\IEEEauthorblockN{Ángel A. Carreño González\and
+Miguel Á. Hernández Sánchez\and
+Alan Espinoza Flores}
+\IEEEauthorblockN{Luis Á. Zacarías Ávila\and
+Adrián Torres Rodríguez}}
+
+\maketitle
+
+\begin{abstract}
+\noindent
+Este documento entrega los dos productos solicitados en la primera entrega de
+\Proyecto: el \textbf{modelo entidad-relación de la base de datos, implementado} en
+PostgreSQL, y la \textbf{implementación de cinco casos de uso} en la versión~1.0 del
+sistema. El modelo consta de 17 tablas, 10 tipos enumerados, 2 vistas, 1 función
+transaccional y 8 disparadores, y cubre las 24 clases del diagrama UML del proyecto;
+las reglas de negocio que antes residirían en la aplicación quedaron como
+restricciones \texttt{CHECK}, disparadores y vistas de la propia base. La versión~1.0
+del sistema es un monolito modular sobre Next.js 16 con una API REST única, y sostiene
+los cinco casos de uso ---registro y verificación de productores, publicación de
+piezas con ficha de origen y sello QR firmado, verificación pública del sello,
+catálogo con filtros y mapa de procedencia, y compra con reparto 90/10--- operados
+contra la base real, no en memoria. Se documenta la trazabilidad entre el modelo UML
+y el esquema, las decisiones de seguridad a nivel de fila y las evidencias de cada
+prueba ejecutada.
+\end{abstract}
+
+\begin{IEEEkeywords}
+modelo entidad-relación, PostgreSQL, casos de uso, comercio electrónico, artesanías,
+verificación criptográfica, seguridad a nivel de fila.
+\end{IEEEkeywords}
+
+% ============================== I. INTRODUCCIÓN ==========================
+\section{Introducción}
+
+\Proyecto\ es una plataforma web progresiva para que los productores originarios
+mexicanos vendan sus piezas directo, sin intermediarios. Cada pieza publica nueve
+datos de origen obligatorios y un sello QR firmado que cualquier persona puede
+comprobar sin crear una cuenta; en cada venta el 90\,\% es para el taller y el
+10\,\% para la plataforma, y ese desglose se muestra al comprador antes de pagar.
+
+La primera entrega del proyecto comprende exactamente dos productos, y este documento
+los presenta en ese orden: \emph{(i)} el modelo entidad-relación de la base de datos
+\textbf{implementado} en el motor, con su trazabilidad contra el diagrama de clases
+UML y con las reglas de integridad residentes en la base; y \emph{(ii)} la
+implementación de \textbf{cinco casos de uso} en la versión~1.0 del sistema, cada uno
+con su pantalla, su API, su flujo y la evidencia de su ejecución contra la base real.
+
+El sistema se construyó con Next.js 16, React 19, TypeScript y Tailwind CSS, con
+PostgreSQL 15 administrado en Supabase y una API REST única bajo \texttt{/api/v1};
+el desarrollo se organizó con Scrum en sprints de dos semanas \cite{propuesta}. La
+versión~1.0 no se despliega: corre en local contra la base en la nube.
+
+% ===================== II. MODELO E-R (IMPLEMENTACIÓN) ====================
+\section{Modelo E-R de la base de datos (implementación)}
+
+El modelo se implementó en PostgreSQL mediante tres migraciones versionadas
+(\texttt{001} esquema inicial, \texttt{002} reglas adicionales y \texttt{003}
+notificaciones y reportes) y se aplicó con un aprovisionamiento idempotente
+(\texttt{npm run db:setup}) que además carga los datos semilla. La Figura
+\ref{fig:er} muestra el modelo tal como quedó en el motor.
+
+\figura{figuras/modelo-er.png}{Modelo entidad-relación implementado en PostgreSQL: 17 tablas, 10 enumeraciones, 2 vistas, 1 función transaccional y 8 disparadores. La versión en alta resolución (3200$\times$2788) está en \texttt{docs/modelo-er.png} del repositorio.}{0.95\textwidth}{fig:er}
+
+El esquema se organiza en cuatro dominios y las subclases del UML se materializan
+como especializaciones por rol sobre \texttt{usuarios}, con las tablas
+\nolinkurl{perfiles_productor} y \nolinkurl{perfiles_comprador} para los atributos
+propios de cada perfil. La Tabla \ref{tab:dominios} resume la composición del modelo.
+
+\begin{table}[H]
+\caption{Composición del modelo implementado.}
+\label{tab:dominios}
+\centering
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{@{}L{0.30\columnwidth}L{0.62\columnwidth}@{}}
+\toprule
+\textbf{Dominio} & \textbf{Tablas} \\
+\midrule
+Usuarios y verificación & \texttt{usuarios}, \nolinkurl{perfiles_productor}, \nolinkurl{verificaciones_productor}, \nolinkurl{perfiles_comprador} \\
+Catálogo y procedencia & \texttt{productos}, \nolinkurl{fichas_origen}, \nolinkurl{sellos_originalidad} \\
+Pedidos, pagos y acuerdos & \texttt{pedidos}, \nolinkurl{detalles_pedido}, \nolinkurl{contratos_b2b}, \texttt{pagos}, \texttt{liquidaciones} \\
+Seguimiento y control & \nolinkurl{seguimiento_pedidos}, \texttt{calificaciones}, \texttt{notificaciones}, \texttt{reportes}, \nolinkurl{bitacora_auditoria} \\
+\midrule
+\multicolumn{2}{@{}L{0.94\columnwidth}@{}}{\texttt{usuarios}, \texttt{pedidos} y \texttt{productos} concentran las 10 enumeraciones; \nolinkurl{vista_catalogo} y \nolinkurl{vista_mapa_procedencia} son vistas de lectura} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La Tabla \ref{tab:traza} muestra la trazabilidad completa contra el diagrama de
+clases UML del proyecto \cite{uml}: las 24 clases tienen correspondencia directa, ya
+sea como tabla, como columna calculada o como especialización por rol.
+
+\begin{table}[H]
+\caption{Trazabilidad clase UML $\rightarrow$ implementación (24 clases).}
+\label{tab:traza}
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.05}
+\begin{tabular}{@{}L{0.19\textwidth}L{0.25\textwidth}L{0.19\textwidth}L{0.22\textwidth}@{}}
+\toprule
+\textbf{Clase UML} & \textbf{Implementación} & \textbf{Tipo} & \textbf{Notas} \\
+\midrule
+\texttt{Usuario} (abstracta) & \texttt{usuarios} + enum \texttt{rol\_usuario} & Tabla & Identidad y credenciales \\
+\texttt{Productor} & \nolinkurl{perfiles_productor} & Tabla & PK compartida con \texttt{usuarios} \\
+\texttt{Comprador} (abstracta) & \nolinkurl{perfiles_comprador} + rol & Tabla & Especialización por rol \\
+\texttt{CompradorB2C} & \texttt{usuarios.rol = comprador\_b2c} & Especialización & Comprador final \\
+\texttt{CompradorB2B} & \texttt{usuarios.rol = comprador\_b2b} & Especialización & Requiere empresa \\
+\texttt{Promotor} & \texttt{usuarios.rol = promotor} & Especialización & Verifica productores \\
+\texttt{Administrador} & \texttt{usuarios.rol = admin} & Especialización & Dos hojas del UML \\
+\texttt{Producto} & \texttt{productos} & Tabla & Precio, stock y categoría \\
+\texttt{FichaOrigen} & \nolinkurl{fichas_origen} & Tabla & 1:1 con producto, 9 campos \\
+\texttt{SelloOriginalidad} & \nolinkurl{sellos_originalidad} & Tabla & Folio + HMAC-SHA256 \\
+\texttt{VerificacionProductor} & \nolinkurl{verificaciones_productor} & Tabla & Registro de revisión \\
+\texttt{Pedido} (abstracta) & \texttt{pedidos} + enum \texttt{tipo\_pedido} & Tabla & Reparte el dinero \\
+\texttt{PedidoB2C} & \texttt{pedidos.tipo = B2C} & Especialización & Comisión 10\,\% \\
+\texttt{PedidoB2B} & \texttt{pedidos.tipo = B2B} + \nolinkurl{contratos_b2b} & Especialización & Comisión 5\,\%, pago 30/70 \\
+\texttt{DetallePedido} & \nolinkurl{detalles_pedido} & Tabla & Línea por producto \\
+\texttt{Pago} & \texttt{pagos} & Tabla & Tarjeta o SPEI (simulado) \\
+\texttt{Comision} & \nolinkurl{pedidos.monto_comision} & Columnas calculadas & Se deriva del pedido \\
+\texttt{Liquidacion} & \texttt{liquidaciones} & Tabla & Neto del productor \\
+\texttt{ContratoB2B} & \nolinkurl{contratos_b2b} & Tabla & Anticipo 30 / saldo 70 \\
+\texttt{SeguimientoPedido} & \nolinkurl{seguimiento_pedidos} & Tabla & Historial automático \\
+\texttt{Calificacion} & \texttt{calificaciones} & Tabla & 1--5, una por pedido \\
+\texttt{Notificacion} & \texttt{notificaciones} & Tabla & Migración 003 \\
+\texttt{Reporte} & \texttt{reportes} & Tabla & Migración 003 \\
+\texttt{BitacoraAuditoria} & \nolinkurl{bitacora_auditoria} & Tabla & Solo \texttt{INSERT} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Una decisión de diseño relevante es que la clase \texttt{Comision} no se materializa
+como entidad independiente porque siempre se deriva del pedido: se conservan el monto
+y el porcentaje en \texttt{pedidos} y el desglose completo en \texttt{liquidaciones},
+con una restricción que obliga a que productor más comisión sumen exactamente lo
+vendido. La Tabla \ref{tab:reglas} resume las reglas que la base defiende por sí
+sola.
+
+\begin{table}[H]
+\caption{Reglas de integridad implementadas en el motor.}
+\label{tab:reglas}
+\centering
+\renewcommand{\arraystretch}{1.05}
+\begin{tabular}{@{}L{0.50\columnwidth}L{0.42\columnwidth}@{}}
+\toprule
+\textbf{Regla} & \textbf{Dónde vive} \\
+\midrule
+La ficha exige los 9 campos de origen & \texttt{CHECK} por columna en \nolinkurl{fichas_origen} \\
+Solo un productor aprobado publica & Disparador \nolinkurl{trg_productos_productor_aprobado} \\
+Productor + comisión = subtotal $-$ descuento & \texttt{CHECK ck\_pedido\_reparto} \\
+B2B solo de 5 a 50 piezas & \texttt{CHECK ck\_pedido\_lote} \\
+Compra concurrente segura & Función \texttt{crear\_pedidos\_b2c} con \texttt{FOR UPDATE} \\
+La bitácora es inmutable & Disparadores \texttt{BEFORE UPDATE/DELETE/TRUNCATE} \\
+Búsqueda sin acentos & Función \texttt{sin\_acentos} + vista \texttt{vista\_catalogo} \\
+Historial y promedio automáticos & Disparadores de seguimiento y calificaciones \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ================ III. CINCO CASOS DE USO IMPLEMENTADOS =================
+\section{Cinco casos de uso implementados en la versión~1.0}
+
+Los cinco casos de uso seleccionados cubren el flujo completo, desde que el artesano se
+registra hasta que alguien le compra: \textbf{CU-01} registro y verificación del
+productor, \textbf{CU-04} publicación de pieza con ficha de origen y sello QR,
+\textbf{CU-06} verificación del sello sin cuenta, \textbf{CU-07} catálogo con filtros
+y mapa de procedencia, y \textbf{CU-08} carrito y compra con reparto 90/10. La
+Tabla \ref{tab:cu} resume su implementación; después se documenta cada uno.
+
+\begin{table}[H]
+\caption{Los cinco casos de uso de la versión~1.0.}
+\label{tab:cu}
+\centering
+\renewcommand{\arraystretch}{1.05}
+\begin{tabular}{@{}L{0.10\columnwidth}L{0.38\columnwidth}L{0.42\columnwidth}@{}}
+\toprule
+\textbf{CU} & \textbf{Pantalla} & \textbf{Evidencia en la base} \\
+\midrule
+CU-01 & \texttt{/registro-productor}, \texttt{/promotor} & Productor \texttt{9da68be6-}\dots\ creado pendiente y aprobado \\
+CU-04 & \texttt{/productor/publicar} & Producto \texttt{1fb66f12-}\dots, folio \nolinkurl{RMX-PUE-2026-1EA2E8} \\
+CU-06 & \texttt{/verificar/[folio]} & \texttt{verificado: true} en \nolinkurl{RMX-PUE-2026-3F9A1C} \\
+CU-07 & \texttt{/catalogo} & Puebla 4 productores / 7 piezas; Oaxaca 1 / 1 \\
+CU-08 & \texttt{/comprador/carrito} & \texttt{PED-2026-C1C0A80D}: \$350 + \$35 + \$150 = \$500 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{CU-01: registro y verificación de productores}
+
+\emph{Actores:} productor y promotor.\\
+\emph{Pantallas:} \nolinkurl{/registro-productor} y \nolinkurl{/promotor}.\\
+\emph{API:} \nolinkurl{POST /api/v1/productores} y \nolinkurl{PATCH /api/v1/productores/:id/verificacion}.
+
+\emph{Flujo:} (1) el productor captura sus datos generales y la ficha artesanal con
+CURP o clave de elector; (2) el servidor valida los campos obligatorios; (3) se
+insertan \texttt{usuarios} y \nolinkurl{perfiles_productor} con estado
+\texttt{pendiente}; (4) el promotor aprueba o rechaza desde el panel, y el sistema
+registra la verificación y la bitácora; (5) solo un productor \texttt{aprobado} puede
+publicar, por disparador de la base.
+
+\emph{Evidencia:} el productor \nolinkurl{9da68be6-cce2-4a44-9a72-0c8509a75a80} fue
+creado en estado \texttt{pendiente} y aprobado después; el conteo de aprobados pasó
+de 5 a 6 y el cambio quedó en \nolinkurl{verificaciones_productor} y en la bitácora.
+
+La Figura~\ref{fig:cu01} muestra el formulario de registro con la ficha artesanal y
+el panel donde el promotor la revisa.
+
+\figura{figuras/cu-01-registro.png}{Formulario de registro del productor y panel del promotor para su verificación.}{0.95\columnwidth}{fig:cu01}
+
+\subsection{CU-04: publicación de pieza con ficha de origen y sello QR}
+
+\emph{Actor:} productor aprobado.\\
+\emph{Pantalla:} \nolinkurl{/productor/publicar}.\\
+\emph{API:} \nolinkurl{POST /api/v1/productos} (\texttt{multipart/form-data}).
+
+\emph{Flujo:} (1) el productor captura los nueve campos obligatorios de la ficha, el
+precio y el stock; (2) el servidor valida y genera el folio
+\texttt{RMX-PUE-2026-XXXXXX}; (3) se calcula la firma HMAC-SHA256 sobre la ficha;
+(4) se insertan producto, ficha y sello, y se sube la fotografía al bucket
+\texttt{fotos-piezas}; (5) se devuelve el QR y la URL pública de verificación.
+
+\emph{Evidencia:} producto \nolinkurl{1fb66f12-d382-4c05-ba3c-d56fd13e120f}, ficha
+\nolinkurl{6d1294f4-c38e-4d06-b193-89932e941e81}, folio \textbf{RMX-PUE-2026-1EA2E8} y
+firma \texttt{9cc9d8d4}\dots\texttt{61da}.
+
+La Figura~\ref{fig:cu04} muestra el formulario de publicación y el sello QR que se
+genera al guardar la pieza.
+
+\figura{figuras/cu-04-publicar.png}{Formulario de publicación y sello QR generado con el folio y la firma de la pieza.}{0.95\columnwidth}{fig:cu04}
+
+\subsection{CU-06: verificación del origen de una pieza por QR}
+
+\emph{Actores:} comprador o público sin cuenta.\\
+\emph{Pantalla:} \nolinkurl{/verificar/[folio]}.\\
+\emph{API:} \nolinkurl{GET /api/v1/sello-qr/:folio?sig=} (pública).
+
+\emph{Flujo:} (1) el comprador escanea el QR o abre el enlace; (2) el servidor
+recalcula el HMAC con el payload de la ficha; (3) compara con la firma guardada y
+muestra la ficha completa o la alerta de falsificación.
+
+\emph{Evidencia:} los folios \nolinkurl{RMX-PUE-2026-3F9A1C} (semilla) y
+\nolinkurl{RMX-PUE-2026-1EA2E8} (emitido en la prueba) responden
+\texttt{verificado: true}. Si alguien altera la pieza, la firma deja de coincidir.
+
+La Figura~\ref{fig:cu06} muestra la pantalla pública que cualquiera puede abrir
+con el QR, sin crear cuenta.
+
+\figura{figuras/cu-06-verificar.png}{Pantalla pública de verificación con la etiqueta ``Origen verificado'' y la ficha completa.}{0.95\columnwidth}{fig:cu06}
+
+\subsection{CU-07: catálogo con filtros y mapa de procedencia}
+
+\emph{Actor:} comprador.\\
+\emph{Pantalla:} \nolinkurl{/catalogo}.\\
+\emph{API:} \nolinkurl{GET /api/v1/productos} con filtros de categoría, estado, pueblo,
+técnica y precio, y \nolinkurl{GET /api/v1/mapa}.
+
+\emph{Flujo:} (1) el catálogo lee de la vista \texttt{vista\_catalogo}, que expone
+solo piezas activas con existencias y de productores aprobados; (2) los filtros se
+aplican en SQL ignorando acentos; (3) el mapa agrupa por estado en
+\texttt{vista\_mapa\_procedencia} y cada casilla filtra el catálogo.
+
+\emph{Evidencia:} el mapa reporta Puebla con 4 productores y 7 piezas, y Oaxaca con 1
+productor y 1 pieza; el catálogo muestra 8 piezas antes de la prueba.
+
+La Figura~\ref{fig:cu07} muestra el catálogo con sus filtros y el mapa nacional de
+procedencia.
+
+\figura{figuras/cu-07-catalogo.png}{Catálogo con filtros y mapa nacional de procedencia.}{0.95\columnwidth}{fig:cu07}
+
+\subsection{CU-08: compra con desglose transparente 90/10}
+
+\emph{Actor:} comprador B2C.\\
+\emph{Pantalla:} \nolinkurl{/comprador/carrito}.\\
+\emph{API:} \nolinkurl{POST /api/v1/pedidos/cotizacion} y \nolinkurl{POST /api/v1/pedidos}.
+
+\emph{Flujo:} (1) la cotización usa siempre los precios de la base, nunca los que
+envía el cliente; (2) el carrito agrupa por productor y muestra el reparto; (3) al
+confirmar se ejecuta la función transaccional \texttt{crear\_pedidos\_b2c}, que
+descuenta existencias y crea pago, liquidación, seguimiento y bitácora en una sola
+transacción.
+
+\emph{Evidencia:} la Tabla \ref{tab:cu08} muestra el desglose de la compra de prueba
+registrada en la base, y la Figura~\ref{fig:cu08} el carrito con el reparto antes de
+pagar.
+
+\begin{table}[H]
+\caption{Desglose de la compra de prueba registrada en la base.}
+\label{tab:cu08}
+\centering
+\renewcommand{\arraystretch}{1.05}
+\begin{tabular}{@{}L{0.58\columnwidth}r@{}}
+\toprule
+\textbf{Concepto} & \textbf{Valor} \\
+\midrule
+Folio del pedido & \texttt{PED-2026-C1C0A80D} \\
+Subtotal & \$350.00 \\
+Comisión de la plataforma (10\,\%) & \$35.00 \\
+Neto del productor (90\,\%) & \$315.00 \\
+Envío & \$150.00 \\
+\textbf{Total cobrado} & \textbf{\$500.00} \\
+Existencias del tenate & 10 $\rightarrow$ 9 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\figura{figuras/cu-08-compra.png}{Carrito con el desglose transparente del reparto entre plataforma y taller.}{0.95\columnwidth}{fig:cu08}
+
+% ============================ IV. SEGURIDAD ==============================
+\section{Seguridad de la base de datos}
+
+La Tabla \ref{tab:seguridad} resume las decisiones de seguridad de la versión~1.0.
+
+\begin{table}[H]
+\caption{Decisiones de seguridad.}
+\label{tab:seguridad}
+\centering
+\renewcommand{\arraystretch}{1.05}
+\begin{tabular}{@{}L{0.48\columnwidth}L{0.44\columnwidth}@{}}
+\toprule
+\textbf{Decisión} & \textbf{Por qué} \\
+\midrule
+RLS activo en las 17 tablas, sin políticas para \texttt{anon} & La llave pública no lee ni escribe aunque se filtre \\
+La llave secreta solo en el servidor & El navegador nunca habla directo con PostgreSQL \\
+\texttt{revoke all} sobre vistas y tablas nuevas & Cierra el acceso por PostgREST \\
+Bitácora inmutable por disparador & Auditoría que la aplicación no puede alterar \\
+Folio y firma generados en el servidor & El cliente no puede falsificar un sello \\
+Precios tomados de la base & El comprador no manipula el importe \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La firma del folio es HMAC-SHA256 \cite{rfc2104}, que detecta cualquier alteración
+del contenido firmado sin necesidad de certificados; el control de acceso sigue el
+principio de mínimo privilegio \cite{owasp} y la seguridad a nivel de fila de
+PostgreSQL \cite{rowlevel}. La bitácora acepta únicamente \texttt{INSERT} y sus
+disparadores bloquean \texttt{UPDATE}, \texttt{DELETE} y \texttt{TRUNCATE}.
+
+% ============================== V. PRUEBAS ===============================
+\section{Pruebas}
+
+La verificación combinó pruebas unitarias sobre la lógica más delicada, resumidas en
+la Tabla \ref{tab:tests}, y pruebas manuales de los cinco casos de uso contra la base
+real, cuya evidencia se concentra en la Tabla \ref{tab:evidencia}.
+
+\begin{table}[H]
+\caption{Pruebas unitarias (Vitest): 26 pruebas, 2 archivos, 0 fallos.}
+\label{tab:tests}
+\centering
+\renewcommand{\arraystretch}{1.05}
+\begin{tabular}{@{}L{0.38\columnwidth}L{0.54\columnwidth}@{}}
+\toprule
+\textbf{Archivo} & \textbf{Cobertura} \\
+\midrule
+\nolinkurl{tests/sello-qr.test.ts} & Formato y unicidad del folio; la firma detecta cambios en folio, comunidad, pueblo, técnica o productor \\
+\nolinkurl{tests/comisiones.test.ts} & Reparto 800 $\rightarrow$ 720/80; el envío no lleva comisión; no se pierden centavos; lote B2B de 30 piezas a \$1\,500 (total \$38\,250, anticipo \$11\,475, saldo \$26\,775) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\caption{Verificación manual de los cinco casos de uso contra la base real.}
+\label{tab:evidencia}
+\centering
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{@{}L{0.07\textwidth}L{0.26\textwidth}L{0.31\textwidth}L{0.28\textwidth}@{}}
+\toprule
+\textbf{CU} & \textbf{Pantalla} & \textbf{Artefacto generado} & \textbf{Evidencia en la base} \\
+\midrule
+CU-01 & \texttt{/registro-productor} y \texttt{/promotor} & Usuario, perfil y verificación & \nolinkurl{9da68be6-cce2-4a44-9a72-0c8509a75a80} creado \texttt{pendiente} y aprobado \\
+CU-04 & \texttt{/productor/publicar} & Producto, ficha, folio y firma & \nolinkurl{1fb66f12-d382-4c05-ba3c-d56fd13e120f}, folio \nolinkurl{RMX-PUE-2026-1EA2E8} \\
+CU-06 & \texttt{/verificar/[folio]} & Verificación pública del sello & \texttt{verificado: true} en \nolinkurl{RMX-PUE-2026-3F9A1C} y \nolinkurl{RMX-PUE-2026-1EA2E8} \\
+CU-07 & \texttt{/catalogo} & Filtros y mapa de procedencia & Mapa: Puebla 4 productores / 7 piezas; Oaxaca 1 / 1 \\
+CU-08 & \texttt{/comprador/carrito} & Pedido, pago, liquidación y bitácora & \texttt{PED-2026-C1C0A80D}; \$350 + \$35 = \$385 + \$150 envío = \$500 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% =========================== VI. CONCLUSIONES ============================
+\section{Conclusiones}
+
+Quedaron entregados los dos productos de la primera entrega. El modelo
+entidad-relación está implementado en el motor con 17 tablas, 10 enumeraciones, 2
+vistas, una función transaccional y ocho disparadores, con correspondencia
+verificable uno a uno contra las 24 clases del diagrama UML, y con las reglas que en
+un diseño convencional residirían en la aplicación resueltas por la propia base:
+obligatoriedad de los nueve campos de origen, exclusividad del productor aprobado
+para publicar, conservación del reparto del dinero e inalterabilidad de la bitácora.
+
+Sobre ese modelo opera la versión~1.0 del sistema, con los cinco casos de uso
+funcionando contra la base real y no contra datos en memoria. La evidencia quedó
+registrada con identificadores concretos ---folio de pedido, folio de sello y
+productor identificado---, de modo que cada afirmación del documento es
+reproducible por el equipo.
+
+El avance más relevante para el propósito del proyecto es que el origen de cada
+pieza dejó de ser una declaración y pasó a ser un dato verificable por cualquier
+persona, sin cuenta y sin conocimiento previo de la plataforma. La siguiente
+versión incorpora el inicio de sesión con Supabase Auth (la columna
+\texttt{usuarios.auth\_id} ya está lista), el canal mayorista por lote —con sus
+tablas y su cálculo ya resueltos— y la pasarela de pago real.
+
+% ============================ REFERENCIAS ================================
+\begin{thebibliography}{99}
+\sloppy
+\bibitem{propuesta} Equipo 10, ``RaicesMX: Propuesta inicial de proyecto de software,'' Facultad de Ciencias de la Computación, BUAP, oct. 2026.
+\bibitem{uml} Equipo 10, ``Diagrama de clases UML de RaicesMX (24 clases),'' Facultad de Ciencias de la Computación, BUAP, 2026.
+\bibitem{jornadaOriente} La Jornada de Oriente, ``Coyotes llegan a revender hasta el triple de precio los productos de artesanos o campesinos,'' 2 sep. 2021. [En línea]. Disponible en: \url{https://www.lajornadadeoriente.com.mx/puebla/coyotes-precio-los-productos-de-artesanos/}
+\bibitem{inegiCultura} INEGI, ``Cuenta Satélite de la Cultura de México 2024,'' comunicado de prensa, 2025. [En línea]. Disponible en: \url{https://www.inegi.org.mx/contenidos/saladeprensa/boletines/2025/cultura/CSCM2024_CP.pdf}
+\bibitem{stripe} Stripe, ``Tarifas y comisiones (México),'' 2026. [En línea]. Disponible en: \url{https://stripe.com/mx/pricing}
+\bibitem{lfppc} Cámara de Diputados del H. Congreso de la Unión, ``Ley Federal de Protección del Patrimonio Cultural de los Pueblos y Comunidades Indígenas y Afromexicanas,'' DOF 17-01-2022. [En línea]. Disponible en: \url{https://www.diputados.gob.mx/LeyesBiblio/pdf/LFPPCPCIA.pdf}
+\bibitem{rfc2104} H. Krawczyk, M. Bellare, y R. Canetti, ``HMAC: Keyed-Hashing for Message Authentication,'' RFC 2104, feb. 1997. [En línea]. Disponible en: \url{https://www.rfc-editor.org/rfc/rfc2104}
+\bibitem{owasp} OWASP Foundation, \textit{OWASP Top 10:2021}, 2021. [En línea]. Disponible en: \url{https://owasp.org/Top10/}
+\bibitem{rowlevel} Supabase, \textit{PostgreSQL Database Documentation: Row Level Security}, 2026. [En línea]. Disponible en: \url{https://supabase.com/docs/guides/database/postgres/row-level-security}
+\end{thebibliography}
+
+\end{document}
