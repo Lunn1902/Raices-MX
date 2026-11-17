@@ -17,6 +17,7 @@ const CAMPOS: { name: string; etiqueta: string; ayuda?: string; type?: string }[
   { name: 'tecnica_principal', etiqueta: 'Técnica principal', ayuda: 'Ej. Telar de cintura, barro bruñido' },
   { name: 'telefono', etiqueta: 'Teléfono (10 dígitos)', type: 'tel' },
   { name: 'correo', etiqueta: 'Correo electrónico', type: 'email' },
+  { name: 'password', etiqueta: 'Contraseña', type: 'password', ayuda: 'Mínimo 6 caracteres. Te servirá para entrar a tu panel cuando te aprueben.' },
 ];
 
 // CU-01: alta del productor; queda pendiente hasta la visita del verificador
@@ -46,6 +47,10 @@ export default function RegistroProductor() {
           en estado <strong className="text-terciaria">pendiente</strong>. Un verificador de RaicesMX visitará{' '}
           {registrado.comunidad} para conocer tu identidad y tu proceso artesanal.
         </p>
+        <div className="mt-6 border-l-4 border-terciaria pl-4 text-sm text-secundaria">
+          Ya tienes cuenta creada. Cuando te aprueben, entra con tu correo y contraseña en{' '}
+          <a href="/login" className="enlace">iniciar sesión</a>.
+        </div>
         <a href="/catalogo" className="enlace mt-8">Explorar el catálogo <ArrowUpRight className="size-4" /></a>
       </div>
     );

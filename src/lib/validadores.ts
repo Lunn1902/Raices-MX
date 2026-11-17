@@ -14,6 +14,7 @@ export const esquemaRegistroProductor = z.object({
   nombre_completo: z.string().trim().min(3, 'Escribe el nombre completo'),
   correo: z.email('Correo no válido'),
   telefono: z.string().trim().regex(/^\d{10}$/, 'El teléfono debe tener 10 dígitos'),
+  password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
   nombre_taller: requerido('El nombre del taller'),
   identificacion_oficial: z
     .string()
