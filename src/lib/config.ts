@@ -3,10 +3,20 @@
 
 const SECRETO_DEMO = 'raicesmx-dev-secret';
 
+// En Vercel, VERCEL_URL es el hostname del deployment. Si no se configuró
+// NEXT_PUBLIC_APP_URL (o quedó en localhost), usamos el dominio real para que
+// los QR apunten a la app desplegada y funcionen al escanearlos desde el celular.
+const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+const esLocalhost = !appUrl || /localhost|127\.0\.0\.1/.test(appUrl);
+const urlBase =
+  esLocalhost && process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : appUrl ?? 'http://localhost:3000';
+
 export const config = {
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
   supabaseServiceKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? '',
-  baseUrl: process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000',
+  baseUrl: urlBase,
 };
 
 export const modoDemo = () => !config.supabaseUrl || !config.supabaseServiceKey;

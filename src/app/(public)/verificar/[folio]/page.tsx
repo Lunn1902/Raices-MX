@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ShieldAlert, ShieldCheck } from 'lucide-react';
+import { ArrowUpRight, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { formatoMXN } from '@/modules/comisiones/calculo';
 import { verificarFolio } from '@/modules/sello-qr/servicio';
 
@@ -78,6 +78,31 @@ export default async function Verificar({ params, searchParams }: PageProps<'/ve
         <p className="mt-1 text-xs text-tinta-clara">
           Emitido el {new Date(r.fecha_emision!).toLocaleDateString('es-MX', { dateStyle: 'long' })} · firma HMAC-SHA256 válida
         </p>
+
+        {/* Sello QR real: apunta a esta misma página de verificación */}
+        <div className="mt-8 flex flex-wrap items-center gap-6 border-t border-secundaria/20 pt-6">
+          {/* eslint-disable-next-line @next/next/no-img-element -- QR servido por route handler, no optimizable con next/image */}
+          <img
+            src={`/api/v1/sello-qr/${encodeURIComponent(r.folio)}/png`}
+            alt={`Código QR de verificación del folio ${r.folio}`}
+            className="size-32 shrink-0 border border-secundaria/20 bg-white p-1 sm:size-36"
+            width={144}
+            height={144}
+          />
+          <div className="min-w-0">
+            <p className="eyebrow-accent">Sello de originalidad</p>
+            <p className="plomo mt-2 max-w-md text-sm">
+              Escanea este código con tu celular para abrir la ficha de origen y comprobar la firma.
+            </p>
+            <a
+              href={`/api/v1/sello-qr/${encodeURIComponent(r.folio)}/png`}
+              className="enlace mt-3 text-sm"
+              download={`sello-${r.folio}.png`}
+            >
+              Descargar QR <ArrowUpRight className="size-4" />
+            </a>
+          </div>
+        </div>
       </header>
 
       <article className="regla mt-8 grid gap-8 py-8 sm:grid-cols-[220px_1fr]">
