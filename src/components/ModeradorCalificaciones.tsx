@@ -23,22 +23,22 @@ export default function ModeradorCalificaciones({ calificaciones }: { calificaci
   }
 
   return (
-    <ul className="space-y-2">
+    <ul>
       {calificaciones.map((c) => {
         const oculta = ocultas.has(c.id);
         return (
           <li
             key={c.id}
-            className={`flex flex-wrap items-start justify-between gap-4 rounded-lg border p-4 ${
-              oculta ? 'border-stone-300 bg-stone-100 opacity-60' : 'border-stone-200 bg-fondo'
+            className={`flex flex-wrap items-start justify-between gap-4 border-b border-secundaria/20 py-4 ${
+              oculta ? 'opacity-60' : ''
             }`}
           >
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-secundaria" aria-label={`${c.puntuacion} de 5 estrellas`}>
                 <span aria-hidden="true">{'★'.repeat(c.puntuacion)}{'☆'.repeat(Math.max(0, 5 - c.puntuacion))}</span>
-                <span className="ml-2 font-normal text-stone-500">{fechaLegible(c.created_at)}</span>
+                <span className="ml-2 font-normal text-tinta-clara">{fechaLegible(c.created_at)}</span>
               </p>
-              <p className="mt-1 text-sm text-stone-600">
+              <p className="mt-1 text-sm text-tinta-clara">
                 {oculta ? 'Comentario oculto por moderación.' : (c.comentario ?? 'Sin comentario.')}
               </p>
             </div>

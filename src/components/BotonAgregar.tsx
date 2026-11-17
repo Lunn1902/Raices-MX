@@ -8,7 +8,7 @@ export function BotonAgregar({ productoId, stock }: { productoId: string; stock:
   const enCarrito = items.find((i) => i.producto_id === productoId)?.cantidad ?? 0;
   const agotado = enCarrito >= stock;
   return (
-    <button className="btn w-full text-sm" disabled={agotado} onClick={() => agregar(productoId, stock)}>
+    <button className={`${enCarrito > 0 ? 'btn-sec' : 'btn'} w-full`} disabled={agotado} onClick={() => agregar(productoId, stock)}>
       {enCarrito > 0 ? <Check className="size-4" /> : <Plus className="size-4" />}
       {agotado ? 'Sin más existencias' : enCarrito > 0 ? `En carrito (${enCarrito})` : 'Agregar al carrito'}
     </button>

@@ -1,13 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Check, X } from 'lucide-react';
+import { ArrowUpRight, Check, X } from 'lucide-react';
 import { enviarJson } from '@/components/Campo';
 import type { EstadoVerificacion, Productor } from '@/types';
 
 const PESTANAS: EstadoVerificacion[] = ['pendiente', 'aprobado', 'rechazado'];
 
-// CU-01: el promotor revisa en campo los datos del taller y aprueba o rechaza
+// CU-01: el verificador revisa en campo los datos del taller y aprueba o rechaza
 export default function PanelPromotor() {
   const [pestana, setPestana] = useState<EstadoVerificacion>('pendiente');
   const [productores, setProductores] = useState<Productor[] | null>(null);
@@ -33,52 +33,63 @@ export default function PanelPromotor() {
 
   return (
     <div>
-      <h1 className="titulo">Panel del promotor</h1>
-      <p className="mb-4 text-stone-600">Verificación de productores en campo · Rosa Elena Téllez (promotora del piloto Puebla)</p>
-      <div className="mb-4 flex gap-2">
+      <p className="eyebrow-accent">Verificación en campo</p>
+      <h1 className="titulo mt-3">Panel del verificador</h1>
+      <p className="plomo mt-4">Revisa la identidad y el taller de cada artesano antes de que sus piezas aparezcan en la tienda.</p>
+
+      <div className="regla mt-10 flex flex-wrap gap-6 pt-6">
         {PESTANAS.map((p) => (
-          <button key={p} onClick={() => setPestana(p)} className={`rounded-full px-4 py-1.5 text-sm capitalize ${pestana === p ? 'bg-secundaria text-white' : 'bg-white text-stone-700'}`}>
-            {p}
+          <button
+            key={p}
+            onClick={() => setPestana(p)}
+            className={`border-b-2 pb-2 text-sm font-semibold uppercase tracking-[0.12em] capitalize transition-colors ${
+              pestana === p ? 'border-terciaria text-terciaria' : 'border-transparent text-secundaria hover:text-terciaria'
+            }`}
+          >
+            {p} {p === 'pendiente' && productores && <span className="ml-1">({productores.length})</span>}
           </button>
         ))}
       </div>
-      {error && <p className="mb-3 text-sm text-red-700">{error}</p>}
+
+      {error && <p className="mt-6 border-l-4 border-terciaria pl-4 text-sm text-terciaria">{error}</p>}
+
       {productores === null ? (
-        <p className="text-stone-500">Cargando…</p>
+        <p className="mt-8 text-tinta-clara">Cargando…</p>
       ) : productores.length === 0 ? (
-        <p className="card text-stone-600">No hay productores en estado {pestana}.</p>
+        <p className="regla mt-6 py-10 text-tinta-clara">No hay artesanos en estado {pestana}.</p>
       ) : (
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="mt-6">
           {productores.map((p) => (
-            <article key={p.id} className="card space-y-2">
+            <article key={p.id} className="regla grid gap-4 py-8 sm:grid-cols-[1fr_auto] sm:gap-10">
               <div>
-                <h2 className="font-semibold">{p.nombre_completo}</h2>
-                <p className="text-sm text-stone-600">Taller {p.nombre_taller}</p>
-              </div>
-              <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-sm">
-                <dt className="text-stone-500">Identificación</dt><dd className="font-mono">{p.identificacion_oficial}</dd>
-                <dt className="text-stone-500">Comunidad</dt><dd>{p.comunidad}, {p.estado}</dd>
-                <dt className="text-stone-500">Pueblo</dt><dd>{p.pueblo_originario}</dd>
-                <dt className="text-stone-500">Técnica</dt><dd>{p.tecnica_principal}</dd>
-                <dt className="text-stone-500">Contacto</dt><dd>{p.telefono} · {p.correo}</dd>
-              </dl>
-              {pestana === 'pendiente' && (
-                <>
-                  <textarea
+                <h2 className="font-display text-2xl font-semibold text-secundaria">{p.nombre_completo}</h2>
+                <p className="mt-1 text-sm text-tinta-clara">Taller {p.nombre_taller}</p>
+                <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+                  <dt className="text-tinta-clara">Identificación</dt><dd className="font-mono">{p.identificacion_oficial}</dd>
+                  <dt className="text-tinta-clara">Comunidad</dt><dd>{p.comunidad}, {p.estado}</dd>
+                  <dt className="text-tinta-clara">Pueblo</dt><dd>{p.pueblo_originario}</dd>
+                  <dt className="text-tinta-clara">Técnica</dt><dd>{p.tecnica_principal}</dd>
+                  <dt className="text-tinta-clara">Contacto</dt><dd>{p.telefono} · {p.correo}</dd>
+                </dl>
+                {pestana === 'pendiente' && (
+                  <input
+                    type="text"
                     placeholder="Observaciones de la visita (opcional)"
-                    className="input text-sm" rows={2}
+                    className="input mt-5 max-w-md"
                     value={notas[p.id] ?? ''}
                     onChange={(e) => setNotas({ ...notas, [p.id]: e.target.value })}
                   />
-                  <div className="flex gap-2">
-                    <button className="btn flex-1 bg-secundaria hover:bg-secundaria" onClick={() => resolver(p.id, 'aprobado')}>
-                      <Check className="size-4" /> Aprobar
-                    </button>
-                    <button className="btn-sec flex-1 border-red-700 text-red-700 hover:bg-red-50" onClick={() => resolver(p.id, 'rechazado')}>
-                      <X className="size-4" /> Rechazar
-                    </button>
-                  </div>
-                </>
+                )}
+              </div>
+              {pestana === 'pendiente' && (
+                <div className="flex flex-col gap-3 self-center sm:w-40">
+                  <button className="btn-accent" onClick={() => resolver(p.id, 'aprobado')}>
+                    <Check className="size-4" /> Aprobar <ArrowUpRight className="size-4" />
+                  </button>
+                  <button className="btn-sec" onClick={() => resolver(p.id, 'rechazado')}>
+                    <X className="size-4" /> Rechazar
+                  </button>
+                </div>
               )}
             </article>
           ))}

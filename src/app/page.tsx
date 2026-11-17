@@ -1,204 +1,233 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowUpRight, BadgeCheck, MapPin, PackagePlus, QrCode, ShieldCheck, ShoppingCart, UserPlus, Wallet } from 'lucide-react';
-
-type Caso = {
-  cu: string;
-  titulo: string;
-  resumen: string;
-  href: string;
-  Icono: typeof UserPlus;
-  foto?: string;
-  posicion?: string;
-  ancho: string;
-  extra?: { href: string; texto: string };
-};
-
-const CASOS: Caso[] = [
-  {
-    cu: 'CU-01',
-    titulo: 'Registro y verificación de productores',
-    resumen: 'El promotor valida identidad y taller antes de que la pieza salga a la venta.',
-    href: '/registro-productor',
-    Icono: UserPlus,
-    foto: '/img/cu-01-telar.jpg',
-    ancho: 'md:col-span-3',
-    extra: { href: '/promotor', texto: 'Panel del promotor' },
-  },
-  {
-    cu: 'CU-04',
-    titulo: 'Publicar pieza con ficha de origen y sello QR',
-    resumen: 'Nueve datos obligatorios, una fotografía y un folio firmado con HMAC.',
-    href: '/productor/publicar',
-    Icono: PackagePlus,
-    foto: '/img/cu-04-piezas.jpg',
-    ancho: 'md:col-span-3',
-  },
-  {
-    cu: 'CU-06',
-    titulo: 'Verificar el origen de una pieza por QR',
-    resumen: 'Sin cuenta: se recalcula la firma y se muestra la ficha completa.',
-    href: '/verificar/RMX-PUE-2026-A15D09',
-    Icono: QrCode,
-    ancho: 'md:col-span-2',
-  },
-  {
-    cu: 'CU-07',
-    titulo: 'Catálogo con filtros y mapa de procedencia',
-    resumen: 'Búsqueda por pueblo, técnica, estado y precio, más el mapa del país.',
-    href: '/catalogo',
-    Icono: MapPin,
-    foto: '/img/cu-07-catalogo.jpg',
-    posicion: 'object-[50%_30%]',
-    ancho: 'md:col-span-2',
-  },
-  {
-    cu: 'CU-08',
-    titulo: 'Compra con desglose transparente 90/10',
-    resumen: 'El cliente ve cuánto gana la plataforma y cuánto llega al taller.',
-    href: '/comprador/carrito',
-    Icono: ShoppingCart,
-    foto: '/img/cu-08-compra-mercado.jpg',
-    posicion: 'object-[50%_60%]',
-    ancho: 'md:col-span-2',
-  },
-];
+import { ArrowRight, ArrowUpRight, MapPin, QrCode, ShieldCheck, Wallet } from 'lucide-react';
 
 export default function Inicio() {
   return (
-    <div className="space-y-14 pb-6">
-      {/* Hero a todo lo ancho: rompe el contenedor de 6xl del layout */}
-      <section className="relative left-1/2 -mt-6 w-screen -translate-x-1/2 overflow-hidden bg-secundaria text-white">
+    <div className="-mt-10 sm:-mt-14">
+      {/* ================= HERO ================= */}
+      <section className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-secundaria-oscuro text-white">
         <Image
           src="/img/hero-campo.jpg"
-          alt=""
-          aria-hidden
+          alt="Campo de maíz en Puebla al atardecer"
           fill
           priority
           sizes="100vw"
           className="object-cover object-[70%_55%] sm:object-[50%_58%]"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#06130b]/93 via-[#0b2115]/70 to-[#0b2115]/15" />
-        <div className="relative mx-auto flex max-w-6xl flex-col justify-center px-4 py-20 sm:py-24 lg:min-h-[600px] lg:py-28">
-          <p className="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/85 backdrop-blur">
-            <BadgeCheck className="size-4 text-[#b9dcae]" /> Origen verificable con sello criptográfico
+        <div
+          className="absolute inset-0"
+          style={{ background: 'linear-gradient(90deg, rgba(6,19,11,0.88) 0%, rgba(6,19,11,0.55) 45%, rgba(6,19,11,0.12) 100%)' }}
+        />
+
+        <div className="relative mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28 lg:py-36">
+          <p className="eyebrow flex items-center gap-2 text-terciaria-suave">
+            <span className="inline-block size-2 bg-terciaria" /> Comercio justo con origen verificable
           </p>
-          <h1 className="mt-6 max-w-3xl font-display text-4xl font-semibold leading-[1.04] tracking-tight sm:text-5xl lg:text-7xl">
-            Compra directo a quien <span className="text-[#b9dcae]">hace la pieza</span>.
+
+          <h1 className="mt-6 max-w-4xl font-display text-5xl font-semibold leading-[1.02] tracking-[-0.03em] sm:text-6xl lg:text-8xl">
+            Lo que haces con tus manos, <span className="text-terciaria-suave">llegue lejos</span>.
           </h1>
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
-            El 90% de cada venta llega al productor originario. Cada pieza trae su ficha de origen y un QR que
-            cualquiera puede comprobar.
+
+          <p className="mt-7 max-w-xl text-lg leading-relaxed text-white/85 sm:text-xl">
+            Compra piezas hechas a mano directamente a quien las crea. Sin intermediarios, con su historia y un
+            sello que cualquiera puede comprobar.
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link
-              href="/catalogo"
-              className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-secundaria transition hover:bg-fondo"
-            >
-              Explorar el catálogo <ArrowUpRight className="size-4" />
+
+          <div className="mt-10 flex flex-wrap items-center gap-4">
+            <Link href="/catalogo" className="btn-accent">
+              Explorar piezas <ArrowUpRight className="size-4" />
             </Link>
-            <Link
-              href="/verificar/RMX-PUE-2026-A15D09"
-              className="inline-flex items-center gap-2 rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
-            >
-              <ShieldCheck className="size-4" /> Verificar un sello
+            <Link href="/registro-productor" className="inline-flex min-h-11 items-center gap-2 border border-white/40 px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-white/10">
+              Soy artesano
             </Link>
           </div>
-          <dl className="mt-12 grid max-w-2xl grid-cols-1 gap-5 border-t border-white/15 pt-6 text-sm sm:grid-cols-3">
-            <div className="flex items-start gap-3">
-              <Wallet className="mt-0.5 size-5 shrink-0 text-[#b9dcae]" />
-              <div>
-                <dt className="font-semibold">90% al productor</dt>
-                <dd className="text-white/65">Comisión transparente del 10%</dd>
-              </div>
+
+          {/* Cifras: el coral marca los numeros */}
+          <dl className="mt-16 grid max-w-3xl grid-cols-1 gap-8 border-t border-white/20 pt-8 sm:grid-cols-3">
+            <div>
+              <dt className="sr-only">Reparto al productor</dt>
+              <dd>
+                <span className="block font-display text-5xl font-semibold text-terciaria">90%</span>
+                <span className="mt-1 block text-sm text-white/75">de cada venta llega al taller</span>
+              </dd>
             </div>
-            <div className="flex items-start gap-3">
-              <ShieldCheck className="mt-0.5 size-5 shrink-0 text-[#b9dcae]" />
-              <div>
-                <dt className="font-semibold">Sello HMAC-SHA256</dt>
-                <dd className="text-white/65">Cualquiera puede verificarlo</dd>
-              </div>
+            <div>
+              <dt className="sr-only">Talleres participantes</dt>
+              <dd>
+                <span className="block font-display text-5xl font-semibold text-terciaria">7</span>
+                <span className="mt-1 block text-sm text-white/75">talleres de pueblos originarios</span>
+              </dd>
             </div>
-            <div className="flex items-start gap-3">
-              <MapPin className="mt-0.5 size-5 shrink-0 text-[#b9dcae]" />
-              <div>
-                <dt className="font-semibold">Puebla y Oaxaca</dt>
-                <dd className="text-white/65">Talleres de pueblos originarios</dd>
-              </div>
+            <div>
+              <dt className="sr-only">Sello de origen</dt>
+              <dd>
+                <span className="block font-display text-5xl font-semibold text-terciaria">100%</span>
+                <span className="mt-1 block text-sm text-white/75">de las piezas con sello verificable</span>
+              </dd>
             </div>
           </dl>
         </div>
       </section>
 
-      <section>
-        <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+      {/* ================= MANIFIESTO ================= */}
+      <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28">
+        <p className="eyebrow-accent">Nuestra promesa</p>
+        <div className="mt-6 grid gap-8 lg:grid-cols-[1.2fr_1fr] lg:gap-16">
+          <h2 className="font-display text-4xl font-semibold leading-[1.08] tracking-tight text-secundaria sm:text-5xl lg:text-6xl">
+            Cada pieza cuenta quién la hizo, dónde nació y <span className="text-terciaria">cuánto recibió su autor</span>.
+          </h2>
+          <div className="space-y-6 self-end">
+            <p className="plomo">
+              Aquí no hay intermediarios que se queden con la mayor parte. El artesano pone su precio, nosotros
+              cobramos una comisión pequeña y transparente, y tú recibes una pieza con identidad.
+            </p>
+            <Link href="/catalogo" className="enlace">
+              Ver las piezas disponibles <ArrowRight className="size-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= CÓMO FUNCIONA (sin tarjetas) ================= */}
+      <section className="regla mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28">
+        <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-secundaria">Versión 1</p>
-            <h2 className="mt-1 font-display text-3xl font-semibold tracking-tight text-tinta sm:text-4xl">
-              Compras al por mayor y al por menor en un solo lugar
+            <p className="eyebrow-accent">Así funciona</p>
+            <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-secundaria sm:text-5xl">
+              Cuatro pasos, sin enredos.
             </h2>
           </div>
-          <p className="max-w-sm text-sm leading-relaxed text-stone-600">
-            Del registro del artesano a la compra verificable: cada tarjeta abre la pantalla donde vive ese paso.
+          <p className="max-w-sm text-sm leading-relaxed text-tinta-clara">
+            Del taller a tu puerta, con la misma claridad en cada etapa.
           </p>
         </div>
 
-        <div className="mt-7 grid gap-4 md:grid-cols-6">
-          {CASOS.map(({ cu, titulo, resumen, href, Icono, foto, posicion, ancho, extra }) => (
-            <article
-              key={cu}
-              className={`group relative flex min-h-[15rem] flex-col justify-between overflow-hidden rounded-2xl bg-secundaria p-5 text-white shadow-sm ring-1 ring-black/5 transition duration-300 hover:-translate-y-1 hover:shadow-xl ${ancho}`}
-            >
-              {foto ? (
-                <Image
-                  src={foto}
-                  alt=""
-                  aria-hidden
-                  fill
-                  sizes="(min-width: 768px) 33vw, 100vw"
-                  className={`object-cover opacity-90 transition duration-700 group-hover:scale-105 ${posicion ?? 'object-center'}`}
-                />
-              ) : (
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_15%,#3f7d4b_0%,transparent_55%)]" />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#08170d]/95 via-[#0f2416]/55 to-transparent" />
-              {/* Icono de agua para las tarjetas sin fotografía */}
-              {!foto && (
-                <Icono
-                  aria-hidden
-                  strokeWidth={0.8}
-                  className="pointer-events-none absolute -right-8 -top-8 size-44 text-white/10"
-                />
-              )}
-
-              <div className="relative flex items-start justify-between">
-                <span className="inline-flex size-10 items-center justify-center rounded-xl border border-white/20 bg-white/10 backdrop-blur">
-                  <Icono className="size-5" />
-                </span>
-                <ArrowUpRight className="size-5 text-white/60 transition group-hover:text-white" />
+        <ol className="mt-12">
+          {[
+            {
+              num: '01',
+              titulo: 'El artesano se da a conocer',
+              texto: 'Un promotor visita el taller, revisa la identidad y confirma que la pieza es realmente hecha ahí.',
+              href: '/registro-productor',
+              cta: 'Registrarme como artesano',
+            },
+            {
+              num: '02',
+              titulo: 'La pieza recibe su sello',
+              texto: 'Cada pieza se publica con su ficha de origen y un código QR que certifica quién la hizo y con qué técnica.',
+              href: '/productor/publicar',
+              cta: 'Publicar una pieza',
+            },
+            {
+              num: '03',
+              titulo: 'Tú la encuentras y la compras',
+              texto: 'Explora por estado, pueblo o técnica. En el carrito ves exactamente cuánto recibe el artesano.',
+              href: '/catalogo',
+              cta: 'Explorar el catálogo',
+            },
+            {
+              num: '04',
+              titulo: 'Compruebas su origen',
+              texto: 'Escanea el QR o abre el enlace. Sin crear cuenta: la firma digital te dice si es auténtica.',
+              href: '/verificar/RMX-PUE-2026-A15D09',
+              cta: 'Probar la verificación',
+            },
+          ].map((paso) => (
+            <li key={paso.num} className="regla group grid gap-4 py-8 sm:grid-cols-[100px_1fr_auto] sm:items-start sm:gap-8">
+              <span className="font-display text-6xl font-semibold leading-none text-terciaria sm:text-7xl">
+                {paso.num}
+              </span>
+              <div>
+                <h3 className="font-display text-2xl font-semibold text-secundaria sm:text-3xl">{paso.titulo}</h3>
+                <p className="mt-2 max-w-xl text-sm leading-relaxed text-tinta-clara sm:text-base">{paso.texto}</p>
               </div>
-
-              <div className="relative">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/60">{cu}</p>
-                <h3 className="mt-1 font-display text-xl font-semibold leading-snug sm:text-2xl">{titulo}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-white/70">{resumen}</p>
-                {extra && (
-                  <Link
-                    href={extra.href}
-                    className="relative z-20 mt-3 inline-block text-sm font-semibold text-[#c6e4bd] underline-offset-4 hover:underline"
-                  >
-                    {extra.texto} →
-                  </Link>
-                )}
-              </div>
-
-              {/* Enlace estirado: toda la tarjeta es clicable sin anidar <a> */}
-              <Link href={href} aria-label={`${cu}: ${titulo}`} className="absolute inset-0 z-10 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-inset" />
-            </article>
+              <Link href={paso.href} className="enlace mt-2 self-start whitespace-nowrap text-sm">
+                {paso.cta} <ArrowRight className="size-4" />
+              </Link>
+            </li>
           ))}
+        </ol>
+      </section>
+
+      {/* ================= GALERÍA EDITORIAL ================= */}
+      <section className="regla mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28">
+        <p className="eyebrow-accent">Del campo a tus manos</p>
+        <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-secundaria sm:text-5xl">
+          Piezas con nombre y apellido.
+        </h2>
+
+        <div className="mt-12 grid gap-10 md:grid-cols-2">
+          <Link href="/catalogo" className="group block">
+            <div className="relative aspect-[4/3] overflow-hidden bg-secundaria/10">
+              <Image
+                src="/img/cu-01-telar.jpg"
+                alt="Telar de cintura en un taller artesanal"
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <span className="absolute bottom-0 left-0 bg-terciaria px-4 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-white">
+                Textiles
+              </span>
+            </div>
+            <h3 className="mt-5 font-display text-2xl font-semibold text-secundaria group-hover:text-terciaria">
+              Telares que cuentan historias
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-tinta-clara">
+              Huipiles, tapetes y piñatas tejidos a mano con técnicas que pasan de generación en generación.
+            </p>
+          </Link>
+
+          <Link href="/catalogo" className="group block">
+            <div className="relative aspect-[4/3] overflow-hidden bg-secundaria/10">
+              <Image
+                src="/img/cu-04-piezas.jpg"
+                alt="Piezas de cerámica artesanal"
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <span className="absolute bottom-0 left-0 bg-terciaria px-4 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-white">
+                Cerámica
+              </span>
+            </div>
+            <h3 className="mt-5 font-display text-2xl font-semibold text-secundaria group-hover:text-terciaria">
+              Barro modelado a mano
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-tinta-clara">
+              Ollas, jarrones y figuras policromadas, cocidas con leña y pulidas con piedra de río.
+            </p>
+          </Link>
+        </div>
+      </section>
+
+      {/* ================= CIERRE ================= */}
+      <section className="bg-secundaria text-white">
+        <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-24">
+          <div className="grid gap-10 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div>
+              <p className="eyebrow text-terciaria-suave">Empieza hoy</p>
+              <h2 className="mt-4 max-w-2xl font-display text-4xl font-semibold leading-tight sm:text-5xl">
+                Una pieza, un taller, una historia que sigue viva.
+              </h2>
+            </div>
+            <div className="flex flex-wrap gap-4">
+              <Link href="/catalogo" className="btn-accent">
+                Explorar piezas <ArrowUpRight className="size-4" />
+              </Link>
+              <Link href="/verificar/RMX-PUE-2026-A15D09" className="inline-flex min-h-11 items-center gap-2 border border-white/40 px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] transition-colors hover:bg-white/10">
+                <ShieldCheck className="size-4" /> Verificar un sello
+              </Link>
+            </div>
+          </div>
+          <div className="mt-14 grid gap-6 border-t border-white/20 pt-8 text-sm text-white/75 sm:grid-cols-3">
+            <p className="flex items-center gap-3"><Wallet className="size-5 shrink-0 text-terciaria" /> 90% directo al artesano</p>
+            <p className="flex items-center gap-3"><QrCode className="size-5 shrink-0 text-terciaria" /> Sello verificable sin cuenta</p>
+            <p className="flex items-center gap-3"><MapPin className="size-5 shrink-0 text-terciaria" /> Puebla y Oaxaca</p>
+          </div>
         </div>
       </section>
     </div>
   );
 }
-

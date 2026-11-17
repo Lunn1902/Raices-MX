@@ -1,7 +1,7 @@
 export const instant = false;
 
 import Link from 'next/link';
-import { FileText } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { repo } from '@/lib/repositorio';
 import { perfilSesion } from '@/lib/supabase/sesion';
 import { formatoMXN } from '@/modules/comisiones/calculo';
@@ -15,74 +15,80 @@ export default async function PaginaContratosB2B() {
     : [];
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="titulo">Contratos B2B</h1>
-        <p className="mt-2 text-stone-600">
-          Cada lote confirmado genera un contrato con anticipo 30% y saldo 70% a la entrega.
+    <div className="py-10">
+      <header>
+        <p className="eyebrow-accent">Pedidos por lote</p>
+        <h1 className="titulo mt-3">Contratos de pedido por lote</h1>
+        <p className="plomo mt-4 max-w-2xl">
+          Cada lote confirmado genera un contrato con un anticipo del 30% y el saldo a la entrega.
         </p>
-      </div>
+        <div className="regla-accent mt-6" />
+      </header>
 
       {!perfil ? (
-        <div className="card mx-auto max-w-lg text-center">
-          <p className="mb-4 text-stone-600">Inicia sesión como comprador B2B para ver tus contratos.</p>
-          <Link href="/comprador-b2b/lotes" className="btn-sec">Cotizar un lote</Link>
+        <div className="mx-auto max-w-lg py-14 text-center">
+          <p className="plomo">Inicia sesión para ver tus contratos de pedido por lote.</p>
+          <Link href="/comprador-b2b/lotes" className="btn-sec mt-6">Cotizar un lote</Link>
         </div>
       ) : pedidos.length === 0 ? (
-        <div className="card mx-auto max-w-lg text-center">
-          <FileText className="mx-auto mb-3 size-10 text-stone-400" />
-          <p className="mb-4 text-stone-600">Aún no tienes contratos. Comienza cotizando un lote.</p>
-          <Link href="/comprador-b2b/lotes" className="btn">Cotizar un lote</Link>
+        <div className="mx-auto max-w-lg py-14 text-center">
+          <p className="plomo">Aún no tienes contratos. Comienza cotizando un lote.</p>
+          <Link href="/comprador-b2b/lotes" className="btn mt-6">Cotizar un lote</Link>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <ul>
           {pedidos.map((pedido) => (
-            <article key={pedido.id} className="card flex flex-col gap-3">
-              <div className="flex items-start gap-3">
-                <span className="rounded-lg bg-fondo p-2 text-secundaria">
-                  <FileText className="size-5" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="font-mono text-sm font-semibold text-secundaria">{pedido.folio_pedido}</p>
-                  <p className="truncate text-sm text-stone-600">{pedido.nombre_productor}</p>
+            <li key={pedido.id} className="border-b border-secundaria/20 py-6">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <p className="eyebrow">Contrato · Pedido por lote</p>
+                  <Link
+                    href={`/comprador-b2b/contratos/${pedido.id}`}
+                    className="group mt-1 inline-flex items-center gap-2 font-display text-2xl font-semibold tracking-tight text-secundaria transition-colors hover:text-terciaria sm:text-3xl"
+                  >
+                    {pedido.folio_pedido}
+                    <ArrowUpRight className="size-5 text-terciaria" aria-hidden="true" strokeWidth={1.5} />
+                  </Link>
+                  <p className="mt-1 text-sm text-tinta-clara">{pedido.nombre_productor}</p>
                 </div>
                 <EstadoPedidoBadge estado={pedido.estado} />
               </div>
 
-              <dl className="grid grid-cols-2 gap-2 rounded-lg bg-fondo p-3 text-sm">
+              <div className="mt-5 grid gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
-                  <dt className="text-xs text-stone-500">Piezas</dt>
-                  <dd className="font-medium">{pedido.cantidad_total}</dd>
+                  <p className="eyebrow">Piezas</p>
+                  <p className="mt-1 text-sm text-secundaria tabular-nums">
+                    {pedido.cantidad_total} {pedido.cantidad_total === 1 ? 'pieza' : 'piezas'}
+                  </p>
                 </div>
                 <div>
-                  <dt className="text-xs text-stone-500">Total</dt>
-                  <dd className="font-medium text-secundaria">{formatoMXN(pedido.total)}</dd>
+                  <p className="eyebrow">Total del lote</p>
+                  <p className="mt-1 font-display text-2xl font-semibold tracking-tight text-terciaria tabular-nums">
+                    {formatoMXN(pedido.total)}
+                  </p>
                 </div>
                 <div>
-                  <dt className="text-xs text-stone-500">Fecha</dt>
-                  <dd className="font-medium">
-                    {new Date(pedido.created_at).toLocaleDateString('es-MX')}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-xs text-stone-500">Anticipo 30</dt>
-                  <dd className="font-medium text-terciaria">
+                  <p className="eyebrow">Anticipo 30%</p>
+                  <p className="mt-1 text-sm font-medium text-terciaria tabular-nums">
                     {formatoMXN(Math.round(pedido.total * 100 * 0.3) / 100)}
-                  </dd>
+                  </p>
                 </div>
-              </dl>
+                <div>
+                  <p className="eyebrow">Fecha</p>
+                  <p className="mt-1 text-sm text-secundaria">
+                    {new Date(pedido.created_at).toLocaleDateString('es-MX')}
+                  </p>
+                </div>
+              </div>
 
-              <Link
-                href={`/comprador-b2b/contratos/${pedido.id}`}
-                className="btn-sec mt-auto self-start"
-              >
+              <Link href={`/comprador-b2b/contratos/${pedido.id}`} className="enlace mt-5">
                 Ver contrato
+                <ArrowUpRight className="size-4" aria-hidden="true" />
               </Link>
-            </article>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );
 }
-

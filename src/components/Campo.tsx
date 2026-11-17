@@ -5,8 +5,8 @@ export function Campo({ etiqueta, error, ayuda, children }: { etiqueta: string; 
     <label className="block">
       <span className="label">{etiqueta}</span>
       {children}
-      {ayuda && !error && <span className="mt-1 block text-xs text-stone-500">{ayuda}</span>}
-      {error && <span className="mt-1 block text-xs text-red-700">{error}</span>}
+      {ayuda && !error && <span className="mt-1 block text-xs text-tinta-clara">{ayuda}</span>}
+      {error && <span className="mt-1 block text-xs text-terciaria">{error}</span>}
     </label>
   );
 }

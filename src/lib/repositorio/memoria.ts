@@ -179,7 +179,7 @@ export const repositorioMemoria: Repositorio = {
   async pedidosPorProductor() { return []; },
   async obtenerPedidoResumen() { return null; },
   async crearPedidoB2B(): Promise<{ pedido: PedidoResumen; contrato: ContratoB2B }> {
-    throw new ErrorNegocio(501, 'Lotes B2B requieren Supabase');
+    throw new ErrorNegocio(501, 'Los pedidos por lote requieren la base de datos');
   },
   async liquidacionesPorProductor(): Promise<Liquidacion[]> { return []; },
   async todasLiquidaciones(): Promise<Liquidacion[]> { return []; },

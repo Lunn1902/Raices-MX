@@ -37,60 +37,64 @@ async function ContenidoUsuarios() {
   ]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       <header>
-        <h1 className="titulo">Usuarios y productores</h1>
-        <p className="mt-1 text-stone-600">
+        <p className="eyebrow-accent">Padrón de la plataforma</p>
+        <h1 className="titulo mt-4">Usuarios y productores</h1>
+        <p className="plomo mt-4 max-w-2xl">
           Consulta el padrón de productores y su estatus de verificación. Solo lectura.
         </p>
       </header>
 
-      <section aria-label="Resumen de productores" className="grid gap-4 sm:grid-cols-3">
-        <div className="card">
-          <p className="text-sm text-stone-600">Productores</p>
-          <p className="mt-1 text-2xl font-semibold text-secundaria">{indicadores.productores}</p>
-        </div>
-        <div className="card">
-          <p className="text-sm text-stone-600">Aprobados</p>
-          <p className="mt-1 text-2xl font-semibold text-secundaria">{indicadores.aprobados}</p>
-        </div>
-        <div className="card">
-          <p className="text-sm text-stone-600">Pendientes</p>
-          <p className="mt-1 text-2xl font-semibold text-terciaria">{indicadores.pendientes}</p>
-        </div>
+      <section aria-label="Resumen de productores" className="grid gap-8 sm:grid-cols-3 sm:gap-12">
+        <dl className="regla pt-8">
+          <dd className="font-display text-4xl font-semibold leading-none text-terciaria sm:text-5xl">{indicadores.productores}</dd>
+          <dt className="eyebrow mt-4">Productores</dt>
+        </dl>
+        <dl className="regla pt-8">
+          <dd className="font-display text-4xl font-semibold leading-none text-terciaria sm:text-5xl">{indicadores.aprobados}</dd>
+          <dt className="eyebrow mt-4">Aprobados</dt>
+        </dl>
+        <dl className="regla pt-8">
+          <dd className="font-display text-4xl font-semibold leading-none text-terciaria sm:text-5xl">{indicadores.pendientes}</dd>
+          <dt className="eyebrow mt-4">Pendientes</dt>
+        </dl>
       </section>
 
-      <section className="card overflow-x-auto" aria-label="Listado de productores">
-        <table className="w-full text-left text-sm">
-          <thead>
-            <tr className="border-b border-stone-200 text-stone-600">
-              <th scope="col" className="p-4 font-medium">Productor</th>
-              <th scope="col" className="p-4 font-medium">Correo</th>
-              <th scope="col" className="p-4 font-medium">Comunidad</th>
-              <th scope="col" className="p-4 font-medium">Entidad</th>
-              <th scope="col" className="p-4 font-medium">Estatus</th>
-              <th scope="col" className="p-4 font-medium">Taller</th>
-            </tr>
-          </thead>
-          <tbody>
-            {productores.map((p) => {
-              const e = estatus(p.estado_verificacion);
-              return (
-                <tr key={p.id} className="border-b border-stone-200 last:border-0">
-                  <td className="p-4 font-medium">{p.nombre_completo}</td>
-                  <td className="p-4 text-stone-600">{p.correo}</td>
-                  <td className="p-4">{p.comunidad}</td>
-                  <td className="p-4">{p.estado}</td>
-                  <td className="p-4"><Badge texto={e.texto} tono={e.tono} /></td>
-                  <td className="p-4">{p.nombre_taller}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        {productores.length === 0 && (
-          <p className="border-t border-stone-200 p-4 text-stone-600">No hay productores registrados.</p>
-        )}
+      <section aria-label="Listado de productores">
+        <p className="eyebrow mb-2">Directorio</p>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[760px] border-collapse text-left text-sm">
+            <thead>
+              <tr className="border-b border-secundaria/30">
+                <th scope="col" className="eyebrow py-4 pr-4">Productor</th>
+                <th scope="col" className="eyebrow px-4 py-4">Correo</th>
+                <th scope="col" className="eyebrow px-4 py-4">Comunidad</th>
+                <th scope="col" className="eyebrow px-4 py-4">Entidad</th>
+                <th scope="col" className="eyebrow px-4 py-4">Estatus</th>
+                <th scope="col" className="eyebrow py-4 pl-4">Taller</th>
+              </tr>
+            </thead>
+            <tbody>
+              {productores.map((p) => {
+                const e = estatus(p.estado_verificacion);
+                return (
+                  <tr key={p.id} className="border-b border-secundaria/15">
+                    <td className="py-5 pr-4 font-medium text-secundaria">{p.nombre_completo}</td>
+                    <td className="px-4 py-5 text-tinta-clara">{p.correo}</td>
+                    <td className="px-4 py-5">{p.comunidad}</td>
+                    <td className="px-4 py-5">{p.estado}</td>
+                    <td className="px-4 py-5"><Badge texto={e.texto} tono={e.tono} /></td>
+                    <td className="py-5 pl-4">{p.nombre_taller}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          {productores.length === 0 && (
+            <p className="regla py-8 plomo">No hay productores registrados.</p>
+          )}
+        </div>
       </section>
     </div>
   );

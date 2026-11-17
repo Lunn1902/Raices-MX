@@ -182,7 +182,7 @@ export const repositorioSupabase: Repositorio = {
       p_comprador_id: compradorId, p_direccion: direccion, p_items: items, p_costo_envio: envio,
     });
     if (error?.message.includes('STOCK_INSUFICIENTE')) throw new ErrorNegocio(409, 'STOCK_INSUFICIENTE');
-    fallo(error, 'Compra B2C');
+    fallo(error, 'No se pudo completar la compra');
     return data;
   },
 
@@ -234,12 +234,12 @@ export const repositorioSupabase: Repositorio = {
       monto_descuento: entrada.subtotal - entrada.total, total: entrada.total,
       monto_productor: entrada.total - entrada.comision, monto_comision: entrada.comision,
     }).select().single();
-    fallo(e1, 'Alta de pedido B2B');
+    fallo(e1, 'No se pudo registrar el pedido por lote');
     const { error: e2 } = await sb().from('detalles_pedido').insert({
       pedido_id: pedido.id, producto_id: entrada.productoId, cantidad: entrada.cantidad,
       precio_unitario: entrada.precioUnitario, subtotal: entrada.subtotal,
     });
-    fallo(e2, 'Detalle del pedido B2B');
+    fallo(e2, 'No se pudo registrar el detalle del pedido');
     const { error: e3 } = await sb().from('pagos').insert([
       { pedido_id: pedido.id, tipo_cobro: 'anticipo_30_b2b', metodo: 'spei', monto: entrada.anticipo30, estado: 'pendiente' },
       { pedido_id: pedido.id, tipo_cobro: 'saldo_70_b2b', metodo: 'spei', monto: entrada.saldo70, estado: 'pendiente' },
@@ -249,7 +249,7 @@ export const repositorioSupabase: Repositorio = {
       pedido_id: pedido.id, folio_contrato: folioContrato, monto_anticipo_30: entrada.anticipo30,
       monto_saldo_70: entrada.saldo70, plazo_entrega_dias: entrada.plazoDias, condiciones_calidad: entrada.condiciones,
     }).select().single();
-    fallo(e4, 'Alta de contrato B2B');
+    fallo(e4, 'No se pudo generar el contrato');
     const { data: liq, error: e5 } = await sb().from('liquidaciones').insert({
       pedido_id: pedido.id, productor_id: entrada.productorId, monto_bruto: entrada.total,
       porcentaje_comision: 5.00, monto_comision_plataforma: entrada.comision,

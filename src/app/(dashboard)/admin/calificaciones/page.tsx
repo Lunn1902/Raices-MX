@@ -41,40 +41,48 @@ async function ContenidoCalificaciones() {
   const conCalificaciones = grupos.filter((g) => g.calificaciones.length > 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       <header>
-        <h1 className="titulo">Calificaciones</h1>
-        <p className="mt-1 text-stone-600">
+        <p className="eyebrow-accent">Reputación de talleres</p>
+        <h1 className="titulo mt-4">Calificaciones</h1>
+        <p className="plomo mt-4 max-w-2xl">
           Reputación de los productores y moderación de comentarios recientes.
         </p>
       </header>
 
       {conCalificaciones.length === 0 ? (
-        <div className="card">
-          <p className="text-stone-600">Aún no hay calificaciones registradas.</p>
+        <div className="regla py-10">
+          <p className="plomo">Aún no hay calificaciones registradas.</p>
         </div>
       ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
+        <section aria-label="Calificaciones por productor" className="grid gap-x-12 gap-y-8 lg:grid-cols-2">
           {conCalificaciones.map(({ productor, calificaciones, promedio, recientes }) => (
-            <section key={productor.id} className="card" aria-label={`Calificaciones de ${productor.nombre_completo}`}>
-              <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
+            <article key={productor.id} className="regla py-8" aria-label={`Calificaciones de ${productor.nombre_completo}`}>
+              <div className="flex flex-wrap items-start justify-between gap-6">
                 <div>
-                  <h2 className="text-lg font-semibold text-secundaria">{productor.nombre_completo}</h2>
-                  <p className="text-sm text-stone-600">{productor.nombre_taller} · {productor.comunidad}</p>
+                  <p className="eyebrow-accent">{productor.estado || 'Productor'}</p>
+                  <h2 className="mt-2 font-display text-2xl font-semibold text-secundaria sm:text-3xl">
+                    {productor.nombre_completo}
+                  </h2>
+                  <p className="plomo mt-2 text-sm">{productor.nombre_taller} · {productor.comunidad}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-semibold text-secundaria">{promedio.toFixed(1)}</p>
-                  <p className="text-xs text-stone-500">
-                    {calificaciones.length} calificación{calificaciones.length === 1 ? '' : 'es'}
+                  <p className="font-display text-4xl font-semibold leading-none text-terciaria sm:text-5xl">
+                    {promedio.toFixed(1)}
+                  </p>
+                  <p className="eyebrow mt-3">
+                    {calificaciones.length} {calificaciones.length === 1 ? 'calificación' : 'calificaciones'}
                   </p>
                 </div>
               </div>
 
-              <h3 className="mb-2 text-sm font-medium text-stone-700">Comentarios recientes · Moderación</h3>
-              <ModeradorCalificaciones calificaciones={recientes} />
-            </section>
+              <div className="regla mt-8 pt-6">
+                <p className="eyebrow mb-4">Comentarios recientes · Moderación</p>
+                <ModeradorCalificaciones calificaciones={recientes} />
+              </div>
+            </article>
           ))}
-        </div>
+        </section>
       )}
     </div>
   );

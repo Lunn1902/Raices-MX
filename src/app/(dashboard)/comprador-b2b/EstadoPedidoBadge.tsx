@@ -1,11 +1,11 @@
 import type { EstadoPedido } from '@/types';
 
 const ESTILOS: Record<EstadoPedido, { etiqueta: string; clases: string }> = {
-  confirmado: { etiqueta: 'Confirmado', clases: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20' },
-  en_proceso: { etiqueta: 'En proceso', clases: 'bg-amber-50 text-amber-700 ring-amber-600/20' },
-  en_camino: { etiqueta: 'En camino', clases: 'bg-sky-50 text-sky-700 ring-sky-600/20' },
-  entregado: { etiqueta: 'Entregado', clases: 'bg-secundaria/10 text-secundaria ring-secundaria/20' },
-  cancelado: { etiqueta: 'Cancelado', clases: 'bg-terciaria/10 text-terciaria ring-terciaria/20' },
+  confirmado: { etiqueta: 'Confirmado', clases: 'border-secundaria/40 text-secundaria' },
+  en_proceso: { etiqueta: 'En proceso', clases: 'border-secundaria/40 text-secundaria' },
+  en_camino: { etiqueta: 'En camino', clases: 'border-secundaria/40 text-secundaria' },
+  entregado: { etiqueta: 'Entregado', clases: 'border-terciaria text-terciaria' },
+  cancelado: { etiqueta: 'Cancelado', clases: 'border-terciaria text-terciaria' },
 };
 
 export default function EstadoPedidoBadge({ estado }: { estado: EstadoPedido }) {
@@ -13,7 +13,7 @@ export default function EstadoPedidoBadge({ estado }: { estado: EstadoPedido }) 
 
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${clases}`}
+      className={`inline-flex items-center border-b-2 px-1 pb-0.5 text-xs font-semibold uppercase tracking-[0.14em] ${clases}`}
     >
       {etiqueta}
     </span>

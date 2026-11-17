@@ -56,65 +56,72 @@ async function ContenidoReportes() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       <header>
-        <h1 className="titulo">Reportes e indicadores</h1>
-        <p className="mt-1 text-stone-600">
+        <p className="eyebrow-accent">Indicadores del piloto</p>
+        <h1 className="titulo mt-4">Reportes e indicadores</h1>
+        <p className="plomo mt-4 max-w-2xl">
           Indicadores generales del piloto e historial de reportes generados.
         </p>
       </header>
 
-      <section aria-label="Indicadores clave" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <section aria-label="Indicadores clave" className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 sm:gap-x-12 sm:gap-y-8">
         {kpis.map((k) => (
-          <div key={k.etiqueta} className="card">
-            <p className="text-sm text-stone-600">{k.etiqueta}</p>
-            <p className="mt-1 text-2xl font-semibold text-secundaria">{k.valor}</p>
-          </div>
+          <dl key={k.etiqueta} className="regla pt-8">
+            <dd className="font-display text-4xl font-semibold leading-none text-terciaria sm:text-5xl">{k.valor}</dd>
+            <dt className="eyebrow mt-4">{k.etiqueta}</dt>
+          </dl>
         ))}
       </section>
 
-      <GeneradorReportes />
+      {/* GeneradorReportes es un componente compartido: no se modifica. El envoltorio
+          aplica el acento coral editorial a su botón de acción, equivalente a .btn-accent. */}
+      <div className="[&_button[type='submit']]:bg-terciaria [&_button[type='submit']]:hover:bg-terciaria-suave">
+        <GeneradorReportes />
+      </div>
 
-      <section className="card overflow-x-auto" aria-label="Historial de reportes">
-        <h2 className="mb-4 text-lg font-semibold text-secundaria">Historial de reportes</h2>
-        <table className="w-full text-left text-sm">
-          <thead>
-            <tr className="border-b border-stone-200 text-stone-600">
-              <th scope="col" className="p-4 font-medium">Tipo</th>
-              <th scope="col" className="p-4 font-medium">Formato</th>
-              <th scope="col" className="p-4 font-medium">Estatus</th>
-              <th scope="col" className="p-4 font-medium">Fecha</th>
-              <th scope="col" className="p-4 font-medium">Archivo</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reportes.map((r) => {
-              const e = estatusReporte(r.estado);
-              return (
-                <tr key={r.id} className="border-b border-stone-200 last:border-0">
-                  <td className="p-4 font-medium">{ETIQUETAS_TIPO[r.tipo]}</td>
-                  <td className="p-4 uppercase">{r.formato}</td>
-                  <td className="p-4"><Badge texto={e.texto} tono={e.tono} /></td>
-                  <td className="p-4 text-stone-600">
-                    {new Date(r.created_at).toLocaleDateString('es-MX', { dateStyle: 'medium' })}
-                  </td>
-                  <td className="p-4">
-                    {r.url_archivo ? (
-                      <a href={r.url_archivo} target="_blank" rel="noopener noreferrer" className="font-medium text-secundaria underline">
-                        Descargar
-                      </a>
-                    ) : (
-                      <span className="text-stone-400">—</span>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        {reportes.length === 0 && (
-          <p className="border-t border-stone-200 p-4 text-stone-600">Aún no se han generado reportes.</p>
-        )}
+      <section aria-label="Historial de reportes">
+        <p className="eyebrow mb-2">Historial de reportes</p>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[640px] border-collapse text-left text-sm">
+            <thead>
+              <tr className="border-b border-secundaria/30">
+                <th scope="col" className="eyebrow py-4 pr-4">Tipo</th>
+                <th scope="col" className="eyebrow px-4 py-4">Formato</th>
+                <th scope="col" className="eyebrow px-4 py-4">Estatus</th>
+                <th scope="col" className="eyebrow px-4 py-4">Fecha</th>
+                <th scope="col" className="eyebrow py-4 pl-4">Archivo</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reportes.map((r) => {
+                const e = estatusReporte(r.estado);
+                return (
+                  <tr key={r.id} className="border-b border-secundaria/15">
+                    <td className="py-5 pr-4 font-medium text-secundaria">{ETIQUETAS_TIPO[r.tipo]}</td>
+                    <td className="px-4 py-5 uppercase">{r.formato}</td>
+                    <td className="px-4 py-5"><Badge texto={e.texto} tono={e.tono} /></td>
+                    <td className="px-4 py-5 text-tinta-clara">
+                      {new Date(r.created_at).toLocaleDateString('es-MX', { dateStyle: 'medium' })}
+                    </td>
+                    <td className="py-5 pl-4">
+                      {r.url_archivo ? (
+                        <a href={r.url_archivo} target="_blank" rel="noopener noreferrer" className="enlace text-sm">
+                          Descargar
+                        </a>
+                      ) : (
+                        <span className="text-tinta-clara">—</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          {reportes.length === 0 && (
+            <p className="regla py-8 plomo">Aún no se han generado reportes.</p>
+          )}
+        </div>
       </section>
     </div>
   );

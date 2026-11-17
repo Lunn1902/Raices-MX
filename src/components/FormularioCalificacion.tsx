@@ -54,10 +54,10 @@ export default function FormularioCalificacion({
   }
 
   return (
-    <form onSubmit={enviar} className="card space-y-4">
+    <form onSubmit={enviar} className="bloque space-y-4">
       <div>
-        <p className="font-medium text-secundaria">{nombreProductor}</p>
-        <p className="text-xs text-stone-500">Pedido <span className="font-mono">{folio}</span></p>
+        <p className="eyebrow-accent">{nombreProductor}</p>
+        <p className="mt-1 text-xs text-tinta-clara">Pedido <span className="font-mono">{folio}</span></p>
       </div>
 
       <fieldset>
@@ -70,16 +70,16 @@ export default function FormularioCalificacion({
               onClick={() => setPuntuacion(n)}
               aria-label={`${n} estrella${n > 1 ? 's' : ''}`}
               aria-pressed={puntuacion === n}
-              className="rounded p-1 text-2xl leading-none transition hover:scale-110 focus-visible:outline-2 focus-visible:outline-secundaria"
+              className="p-1 text-2xl leading-none transition hover:scale-110 focus-visible:outline-2 focus-visible:outline-terciaria"
             >
-              <span aria-hidden="true" className={n <= puntuacion ? 'text-secundaria' : 'text-stone-300'}>
+              <span aria-hidden="true" className={n <= puntuacion ? 'text-terciaria' : 'text-secundaria/30'}>
                 {n <= puntuacion ? '★' : '☆'}
               </span>
             </button>
           ))}
         </div>
         {puntuacion > 0 && (
-          <p className="mt-1 text-xs text-stone-500">{puntuacion} de 5 estrellas</p>
+          <p className="mt-1 text-xs text-tinta-clara">{puntuacion} de 5 estrellas</p>
         )}
       </fieldset>
 
@@ -101,7 +101,7 @@ export default function FormularioCalificacion({
       </button>
 
       {mensaje && <p className="text-sm text-secundaria" role="status">{mensaje}</p>}
-      {error && <p className="text-sm text-red-700" role="alert">{error}</p>}
+      {error && <p className="text-sm text-terciaria" role="alert">{error}</p>}
     </form>
   );
 }

@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     const perfil = await perfilSesion();
     if (!perfil) throw new ErrorNegocio(401, 'Inicia sesión para pedir un lote');
     if (perfil.rol !== 'comprador_b2b') {
-      throw new ErrorNegocio(403, 'Solo los compradores B2B pueden pedir lotes');
+      throw new ErrorNegocio(403, 'Solo las tiendas y negocios pueden pedir por lote');
     }
 
     const datos = esquemaLote.parse(await req.json());

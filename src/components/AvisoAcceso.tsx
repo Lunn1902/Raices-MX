@@ -13,10 +13,11 @@ export default function AvisoAcceso({
   etiqueta?: string;
 }) {
   return (
-    <div className="card mx-auto max-w-lg space-y-3 text-center">
+    <div className="mx-auto max-w-lg py-10 text-center">
       <h1 className="titulo">{titulo}</h1>
-      <p className="text-stone-600">{mensaje}</p>
-      <Link href={href} className="btn">{etiqueta}</Link>
+      <div className="regla-accent mt-6" />
+      <p className="plomo mt-6">{mensaje}</p>
+      <Link href={href} className="btn mt-8">{etiqueta}</Link>
     </div>
   );
 }

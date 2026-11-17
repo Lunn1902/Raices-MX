@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Search } from 'lucide-react';
+import { ArrowRight, Search } from 'lucide-react';
 import { MapaProcedencia } from '@/components/MapaProcedencia';
 import { TarjetaPieza } from '@/components/TarjetaPieza';
 import { repo } from '@/lib/repositorio';
@@ -31,13 +31,13 @@ export default async function Catalogo({ searchParams }: PageProps<'/catalogo'>)
   );
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-      <aside className="space-y-4">
-        <form className="card space-y-3" action="/catalogo">
+    <div className="grid gap-10 lg:grid-cols-[300px_1fr] lg:gap-14">
+      <aside className="space-y-8 lg:sticky lg:top-24 lg:self-start">
+        <form className="space-y-5" action="/catalogo">
           <label className="block">
             <span className="label">Buscar</span>
             <div className="relative">
-              <Search className="absolute left-3 top-3 size-4 text-stone-400" />
+              <Search className="absolute left-3 top-3 size-4 text-secundaria-suave" />
               <input name="q" defaultValue={filtros.q} placeholder="huipil, barro, palma..." className="input pl-9" />
             </div>
           </label>
@@ -55,8 +55,8 @@ export default async function Catalogo({ searchParams }: PageProps<'/catalogo'>)
               <input name="max" type="number" min={0} defaultValue={filtros.precioMax} className="input" />
             </label>
           </div>
-          <div className="flex gap-2">
-            <button className="btn flex-1">Aplicar filtros</button>
+          <div className="flex gap-3 pt-2">
+            <button className="btn-accent flex-1">Aplicar filtros</button>
             {hayFiltros && (
               <Link href="/catalogo" className="btn-sec">
                 Limpiar
@@ -68,20 +68,26 @@ export default async function Catalogo({ searchParams }: PageProps<'/catalogo'>)
       </aside>
 
       <section>
-        <h1 className="titulo mb-1">Catálogo</h1>
-        <p className="mb-4 text-sm text-stone-600">
+        <p className="eyebrow-accent">Nuestras piezas</p>
+        <h1 className="titulo mt-3">Explora el catálogo</h1>
+        <p className="mt-3 text-sm text-tinta-clara">
           {piezas.length} {piezas.length === 1 ? 'pieza encontrada' : 'piezas encontradas'}
           {filtros.estado && ` en ${filtros.estado}`}
         </p>
-        {piezas.length === 0 ? (
-          <p className="card text-stone-600">No hay piezas con esa combinación de filtros.</p>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {piezas.map((p) => (
-              <TarjetaPieza key={p.id} pieza={p} />
-            ))}
-          </div>
-        )}
+        <div className="mt-8">
+          {piezas.length === 0 ? (
+            <div className="regla py-10">
+              <p className="text-tinta-clara">No hay piezas con esa combinación de filtros.</p>
+              <Link href="/catalogo" className="enlace mt-4">Ver todas las piezas <ArrowRight className="size-4" /></Link>
+            </div>
+          ) : (
+            <div>
+              {piezas.map((p) => (
+                <TarjetaPieza key={p.id} pieza={p} />
+              ))}
+            </div>
+          )}
+        </div>
       </section>
     </div>
   );

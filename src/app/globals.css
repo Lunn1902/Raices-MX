@@ -1,14 +1,27 @@
 @import "tailwindcss";
 
+/* ============================================================
+   RaicesMX · Sistema visual editorial 60 / 30 / 10
+   60% fondo crema · 30% verde bosque · 10% coral (acento)
+   Principios: jerarquia, espacio en blanco, reglas finas, sin sombras.
+   ============================================================ */
+
 @theme {
-  --color-fondo: #EEE2CB;
-  --color-secundaria: #1B4532;
+  --color-fondo: #EEE2CB;       /* 60% - lienzo */
+  --color-fondo-claro: #F5EDDC; /* variacion del lienzo */
+  --color-secundaria: #1B4532;  /* 30% - verde bosque: texto y estructura */
   --color-secundaria-oscuro: #132a20;
-  --color-terciaria: #EE4129;
+  --color-secundaria-suave: #6d8a7c; /* verde atenuado para texto secundario */
+  --color-terciaria: #EE4129;   /* 10% - coral: acentos con intencion */
+  --color-terciaria-suave: #f4775f;
   --color-tinta: #1B4532;
-  --color-tinta-clara: #5a6f64;
+  --color-tinta-clara: #556d5f;
   --font-sans: var(--font-texto);
   --font-display: var(--font-fraunces);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 html,
@@ -19,28 +32,91 @@ body {
 body {
   background: var(--color-fondo);
   color: var(--color-tinta);
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+/* Selección de texto con el acento */
+::selection {
+  background: var(--color-terciaria);
+  color: #fff;
+}
+
+/* Foco visible y consistente (accesibilidad) */
+:focus-visible {
+  outline: 2px solid var(--color-terciaria);
+  outline-offset: 3px;
 }
 
 @layer components {
-  .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-secundaria px-4 py-2.5 font-medium text-white transition hover:bg-secundaria-oscuro disabled:cursor-not-allowed disabled:opacity-50;
+  /* --- Etiquetas pequeñas: el "sello" editorial --- */
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.28em] text-secundaria;
   }
-  .btn-sec {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-secundaria px-4 py-2.5 font-medium text-secundaria transition hover:bg-secundaria/10;
+  .eyebrow-accent {
+    @apply text-[11px] font-semibold uppercase tracking-[0.28em] text-terciaria;
+  }
+
+  /* --- Titulos: Fraunces con mucha presencia --- */
+  .titulo {
+    @apply font-display text-4xl font-semibold leading-[1.05] tracking-[-0.02em] text-secundaria sm:text-5xl lg:text-6xl;
+  }
+  .subtitulo {
+    @apply font-display text-2xl font-semibold leading-tight tracking-tight text-secundaria sm:text-3xl;
+  }
+  .plomo {
+    @apply text-base leading-relaxed text-tinta-clara sm:text-lg;
+  }
+
+  /* --- Reglas: sustituyen a las tarjetas --- */
+  .regla {
+    @apply border-t border-secundaria/20;
+  }
+  .regla-accent {
+    @apply border-t-2 border-terciaria;
+  }
+
+  /* --- Botones: relleno con intencion --- */
+  .btn {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 bg-secundaria px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-colors duration-200 hover:bg-secundaria-oscuro disabled:cursor-not-allowed disabled:opacity-50;
   }
   .btn-accent {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-terciaria px-4 py-2.5 font-medium text-white transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 bg-terciaria px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-colors duration-200 hover:bg-terciaria-suave disabled:cursor-not-allowed disabled:opacity-50;
   }
+  .btn-sec {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 border border-secundaria/40 px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-secundaria transition-colors duration-200 hover:border-secundaria hover:bg-secundaria/5;
+  }
+
+  /* --- Enlaces con subrayado de acento --- */
+  .enlace {
+    @apply inline-flex items-center gap-2 border-b-2 border-terciaria pb-0.5 font-semibold text-secundaria transition-colors duration-200 hover:text-terciaria;
+  }
+
+  /* --- Formularios: campos sobre el fondo, sin cajas --- */
   .input {
-    @apply w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 outline-none focus:border-secundaria focus:ring-2 focus:ring-secundaria/20;
-  }
-  .card {
-    @apply rounded-xl border border-stone-200 bg-white p-4 shadow-sm;
+    @apply w-full rounded-none border-0 border-b border-secundaria/30 bg-transparent px-0 py-3 text-base text-secundaria outline-none transition-colors placeholder:text-secundaria-suave focus:border-terciaria focus:ring-0;
   }
   .label {
-    @apply mb-1 block text-sm font-medium text-stone-700;
+    @apply mb-2 block text-[11px] font-semibold uppercase tracking-[0.2em] text-secundaria;
   }
-  .titulo {
-    @apply font-display text-3xl font-semibold tracking-tight text-secundaria sm:text-4xl;
+
+  /* --- Bloque: reemplaza visualmente a .card (sin caja, con regla) --- */
+  .bloque {
+    @apply border-t border-secundaria/20 py-6;
+  }
+
+  /* Compatibilidad: .card deja de ser una tarjeta y pasa a ser un bloque editorial */
+  .card {
+    @apply border-t border-secundaria/20 bg-transparent p-0 py-6 shadow-none;
+  }
+}
+
+/* Respeta la preferencia de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

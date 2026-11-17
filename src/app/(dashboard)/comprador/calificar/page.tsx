@@ -30,21 +30,23 @@ async function ContenidoCalificar() {
   const pedidos = await repo().pedidosPorComprador(perfil.id);
 
   return (
-    <div className="space-y-6">
+    <div className="py-10">
       <header>
-        <h1 className="titulo">Calificar pedidos</h1>
-        <p className="mt-1 text-stone-600">
+        <p className="eyebrow-accent">Tu opinión</p>
+        <h1 className="titulo mt-3">Calificar pedidos</h1>
+        <p className="plomo mt-4 max-w-2xl">
           Comparte tu experiencia con los productores de tus piezas.
         </p>
+        <div className="regla-accent mt-6" />
       </header>
 
       {pedidos.length === 0 ? (
-        <div className="card mx-auto max-w-lg space-y-3 text-center">
-          <p className="text-stone-600">Todavía no tienes pedidos que calificar.</p>
-          <Link href="/catalogo" className="btn">Explorar el catálogo</Link>
+        <div className="mx-auto max-w-lg py-14 text-center">
+          <p className="plomo">Todavía no tienes pedidos que calificar.</p>
+          <Link href="/catalogo" className="btn mt-6">Explorar el catálogo</Link>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-8 pt-2 md:grid-cols-2">
           {pedidos.map((p) => (
             <FormularioCalificacion
               key={p.id}

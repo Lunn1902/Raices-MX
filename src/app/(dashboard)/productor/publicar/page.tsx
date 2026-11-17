@@ -46,14 +46,14 @@ export default function PublicarPieza() {
   if (publicada) {
     const { sello } = publicada;
     return (
-      <div className="card mx-auto max-w-md space-y-3 text-center">
-        <ShieldCheck className="mx-auto size-10 text-secundaria" />
-        <h1 className="text-xl font-bold">Sello de originalidad emitido</h1>
-        <p className="text-stone-700">{publicada.producto.nombre}</p>
-        <p className="font-mono text-lg">{sello.folio}</p>
+      <div className="regla-accent mx-auto max-w-md space-y-4 py-10 text-center">
+        <ShieldCheck className="mx-auto size-12 text-terciaria" />
+        <h1 className="font-display text-3xl font-semibold text-secundaria">Sello emitido</h1>
+        <p className="text-secundaria">{publicada.producto.nombre}</p>
+        <p className="font-mono text-lg text-terciaria">{sello.folio}</p>
         {/* eslint-disable-next-line @next/next/no-img-element -- QR generado en el servidor como data URL */}
         <img src={sello.qr} alt={`Código QR del folio ${sello.folio}`} className="mx-auto size-56" />
-        <p className="text-sm text-stone-600">Recibirás {formatoMXN(publicada.monto_productor)} por cada venta (90%).</p>
+        <p className="text-sm text-tinta-clara">Recibirás {formatoMXN(publicada.monto_productor)} por cada venta (90%).</p>
         <div className="flex flex-col gap-2">
           <a href={`/api/v1/sello-qr/${sello.folio}/png`} className="btn">
             <Download className="size-4" /> Descargar QR (PNG)
@@ -61,7 +61,7 @@ export default function PublicarPieza() {
           <Link href={sello.url.replace(/^https?:\/\/[^/]+/, '')} className="btn-sec">
             Probar verificación pública
           </Link>
-          <button className="text-sm text-secundaria hover:underline" onClick={() => location.reload()}>
+          <button className="enlace justify-center text-sm" onClick={() => location.reload()}>
             Publicar otra pieza
           </button>
         </div>
@@ -74,12 +74,13 @@ export default function PublicarPieza() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="titulo">Publicar pieza</h1>
-      <p className="mb-4 text-stone-600">Los 9 datos de la ficha de origen son obligatorios y quedan firmados en el sello QR.</p>
+      <p className="eyebrow-accent">Nueva pieza</p>
+      <h1 className="titulo mt-3">Publicar pieza</h1>
+      <p className="plomo mt-4">Los 9 datos de la ficha de origen son obligatorios y quedan firmados en el sello QR.</p>
 
       {/* key fuerza a reiniciar los valores precargados al cambiar de productor */}
       <form key={productor?.id ?? 'sin'} onSubmit={enviar} className="space-y-4" noValidate>
-        <section className="card space-y-3">
+        <section className="regla space-y-8 pt-6">
           <Campo etiqueta="Publicar como" error={err('productor_id')} ayuda="Solo aparecen productores verificados por un promotor">
             <select name="productor_id" className="input" value={productor?.id ?? ''} onChange={(e) => setProductor(productores.find((p) => p.id === e.target.value) ?? null)}>
               {productores.map((p) => (
@@ -109,8 +110,8 @@ export default function PublicarPieza() {
           </Campo>
         </section>
 
-        <section className="card space-y-3">
-          <h2 className="font-semibold">Ficha de origen</h2>
+        <section className="regla space-y-8 pt-6">
+          <h2 className="subtitulo">Ficha de origen</h2>
           <div className="grid gap-3 sm:grid-cols-2">
             <Campo etiqueta="1. Nombre del productor" error={err('nombre_productor')}>
               <input name="nombre_productor" defaultValue={productor?.nombre_completo} className="input" />
@@ -142,20 +143,20 @@ export default function PublicarPieza() {
             </Campo>
           </div>
           {precioNum > 0 && (
-            <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-secundaria">
-              Recibirás <b>{formatoMXN(montoProductorB2C(precioNum))}</b> por pieza (90%). RaicesMX retiene {formatoMXN(precioNum - montoProductorB2C(precioNum))} (10%).
+            <p className="border-l-4 border-terciaria pl-4 text-sm text-secundaria">
+              Recibirás <strong className="text-terciaria">{formatoMXN(montoProductorB2C(precioNum))}</strong> por pieza (90%). RaicesMX retiene {formatoMXN(precioNum - montoProductorB2C(precioNum))} (10%).
             </p>
           )}
           <Campo etiqueta="9. Fotografía de la pieza" error={err('foto')} ayuda="JPG, PNG o WEBP de máximo 5 MB">
-            <input name="foto" type="file" accept="image/jpeg,image/png,image/webp" className="input file:mr-3 file:rounded file:border-0 file:bg-fondo file:px-3 file:py-1" />
+            <input name="foto" type="file" accept="image/jpeg,image/png,image/webp" className="input file:mr-3 file:border-0 file:bg-transparent file:px-0 file:py-1 file:text-sm file:font-semibold file:text-terciaria" />
           </Campo>
           <Campo etiqueta="Historia de la pieza (opcional)">
             <textarea name="historia_pieza" rows={3} className="input" />
           </Campo>
         </section>
 
-        {mensaje && <p className="text-sm text-red-700">{mensaje}</p>}
-        <button className="btn w-full" disabled={enviando || !productor}>
+        {mensaje && <p className="border-l-4 border-terciaria pl-4 text-sm text-terciaria">{mensaje}</p>}
+        <button className="btn-accent w-full sm:w-auto" disabled={enviando || !productor}>
           {enviando ? 'Generando sello…' : 'Publicar y generar sello QR'}
         </button>
       </form>

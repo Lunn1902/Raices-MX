@@ -44,11 +44,11 @@ export default function GeneradorReportes() {
   }
 
   return (
-    <section className="card mb-6" aria-labelledby="generador-reportes-titulo">
-      <h2 id="generador-reportes-titulo" className="mb-1 text-lg font-semibold text-secundaria">
+    <section className="bloque mb-6" aria-labelledby="generador-reportes-titulo">
+      <h2 id="generador-reportes-titulo" className="subtitulo">
         Generar reporte
       </h2>
-      <p className="mb-4 text-sm text-stone-600">
+      <p className="plomo mt-2">
         Solicita un reporte del piloto. El archivo quedará registrado en el historial.
       </p>
 
@@ -75,7 +75,7 @@ export default function GeneradorReportes() {
       </form>
 
       {mensaje && <p className="mt-4 text-sm text-secundaria" role="status">{mensaje}</p>}
-      {error && <p className="mt-4 text-sm text-red-700" role="alert">{error}</p>}
+      {error && <p className="mt-4 text-sm text-terciaria" role="alert">{error}</p>}
     </section>
   );
 }

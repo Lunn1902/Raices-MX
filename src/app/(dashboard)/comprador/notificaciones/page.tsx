@@ -29,12 +29,14 @@ async function ContenidoNotificaciones() {
   const notificaciones = await repo().notificacionesPorUsuario(perfil.id);
 
   return (
-    <div className="space-y-6">
+    <div className="py-10">
       <header>
-        <h1 className="titulo">Notificaciones</h1>
-        <p className="mt-1 text-stone-600">
+        <p className="eyebrow-accent">Tu actividad</p>
+        <h1 className="titulo mt-3">Notificaciones</h1>
+        <p className="plomo mt-4 max-w-2xl">
           Avisos sobre tus pedidos y entregas. Márcalas como leídas cuando las revises.
         </p>
+        <div className="regla-accent mt-6" />
       </header>
 
       <ListaNotificaciones notificaciones={notificaciones} />

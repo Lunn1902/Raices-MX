@@ -1,18 +1,19 @@
 export const instant = false;
 
 import Link from 'next/link';
-import { QrCode } from 'lucide-react';
+import { ArrowUpRight, QrCode } from 'lucide-react';
 import { repo } from '@/lib/repositorio';
 import { perfilSesion } from '@/lib/supabase/sesion';
 import { formatoMXN } from '@/modules/comisiones/calculo';
 
 export const metadata = { title: 'Mis piezas' };
 
-function Aviso({ titulo, mensaje, alerta }: { titulo: string; mensaje: string; alerta?: boolean }) {
+function Aviso({ titulo, mensaje }: { titulo: string; mensaje: string }) {
   return (
-    <div className="card">
-      <h1 className="titulo mb-4">{titulo}</h1>
-      <p className={alerta ? 'text-terciaria' : 'text-stone-600'}>{mensaje}</p>
+    <div className="regla py-10">
+      <p className="eyebrow-accent">Mis piezas</p>
+      <h1 className="titulo mt-3">{titulo}</h1>
+      <p className="plomo mt-4 max-w-xl">{mensaje}</p>
     </div>
   );
 }
@@ -28,7 +29,7 @@ export default async function MisPiezas() {
     return (
       <Aviso
         titulo="Mis piezas"
-        mensaje={`Esta sección es exclusiva para productores. Tu rol actual es ${perfil.rol}.`}
+        mensaje="Esta sección es exclusiva para productores. Tu cuenta no tiene acceso a este espacio."
       />
     );
   }
@@ -42,64 +43,71 @@ export default async function MisPiezas() {
       <Aviso
         titulo="Mis piezas"
         mensaje="No pudimos cargar tus piezas. Intenta recargar la página más tarde."
-        alerta
       />
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="titulo">Mis piezas</h1>
-        <p className="mt-1 text-stone-600">Piezas publicadas y aprobadas en el catálogo.</p>
-      </div>
+    <div className="space-y-10">
+      <header>
+        <p className="eyebrow-accent">Tu catálogo</p>
+        <h1 className="titulo mt-4">Mis piezas</h1>
+        <p className="plomo mt-4 max-w-2xl">
+          Piezas publicadas y aprobadas en el catálogo. {piezas.length} {piezas.length === 1 ? 'pieza' : 'piezas'} en total.
+        </p>
+      </header>
 
       {piezas.length === 0 ? (
-        <div className="card text-center">
-          <p className="text-stone-600">Todavía no tienes piezas publicadas en el catálogo.</p>
-          <Link href="/productor/publicar" className="btn mt-4">
+        <div className="regla py-10">
+          <p className="plomo">Todavía no tienes piezas publicadas en el catálogo.</p>
+          <Link href="/productor/publicar" className="btn-accent mt-6">
             Publicar mi primera pieza
           </Link>
         </div>
       ) : (
-        <div className="card overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-stone-200">
-                <th scope="col" className="py-2 text-left font-semibold text-stone-700">Pieza</th>
-                <th scope="col" className="py-2 text-left font-semibold text-stone-700">Categoría</th>
-                <th scope="col" className="py-2 text-right font-semibold text-stone-700">Precio</th>
-                <th scope="col" className="py-2 text-right font-semibold text-stone-700">Stock</th>
-                <th scope="col" className="py-2 text-left font-semibold text-stone-700">Sello QR</th>
-              </tr>
-            </thead>
-            <tbody>
-              {piezas.map((pieza) => (
-                <tr key={pieza.id} className="border-b border-stone-200 last:border-0">
-                  <td className="py-2 text-left font-medium text-secundaria">{pieza.nombre}</td>
-                  <td className="py-2 text-left text-stone-600">{pieza.categoria}</td>
-                  <td className="py-2 text-right">{formatoMXN(pieza.precio_unitario)}</td>
-                  <td className="py-2 text-right">{pieza.stock}</td>
-                  <td className="py-2 text-left">
-                    {pieza.folio_unico ? (
-                      <Link
-                        href={`/verificar/${pieza.folio_unico}`}
-                        className="inline-flex items-center gap-1 font-mono text-xs text-secundaria hover:underline"
-                      >
-                        <QrCode className="size-4 shrink-0" aria-hidden="true" />
-                        {pieza.folio_unico}
-                      </Link>
-                    ) : (
-                      <span className="text-terciaria">Sin sello</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <section aria-label="Listado de piezas" className="space-y-0">
+          {piezas.map((pieza) => (
+            <article
+              key={pieza.id}
+              className="regla grid gap-5 py-8 sm:grid-cols-[96px_1fr_auto] sm:items-center sm:gap-8"
+            >
+              <Link
+                href={`/verificar/${pieza.folio_unico ?? ''}`}
+                className="block size-24 overflow-hidden bg-secundaria/10"
+                aria-label={`Ver ficha de ${pieza.nombre}`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element -- en modo demo las fotos son data URLs */}
+                <img src={pieza.fotografias_urls[0]} alt={pieza.nombre} className="size-full object-cover" loading="lazy" />
+              </Link>
+
+              <div className="min-w-0">
+                <p className="eyebrow-accent">{pieza.categoria}</p>
+                <h2 className="mt-2 font-display text-2xl font-semibold text-secundaria sm:text-3xl">
+                  {pieza.nombre}
+                </h2>
+                <p className="eyebrow mt-3">Existencias · {pieza.stock}</p>
+
+                {pieza.folio_unico ? (
+                  <Link href={`/verificar/${pieza.folio_unico}`} className="enlace mt-4 text-sm">
+                    <QrCode className="size-4 text-terciaria" aria-hidden="true" />
+                    {pieza.folio_unico}
+                    <ArrowUpRight className="size-4" aria-hidden="true" />
+                  </Link>
+                ) : (
+                  <p className="mt-4 text-sm text-terciaria">Sin sello QR</p>
+                )}
+              </div>
+
+              <div className="sm:text-right">
+                <p className="font-display text-3xl font-semibold text-secundaria sm:text-4xl">
+                  {formatoMXN(pieza.precio_unitario)}
+                </p>
+                <p className="eyebrow mt-2">Precio por pieza</p>
+              </div>
+            </article>
+          ))}
+        </section>
       )}
     </div>
   );
 }
-

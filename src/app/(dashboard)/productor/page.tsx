@@ -1,16 +1,18 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
+import { ArrowRight } from 'lucide-react';
 import { repo } from '@/lib/repositorio';
 import { perfilSesion } from '@/lib/supabase/sesion';
 
 export const metadata = { title: 'Panel Productor' };
 export const instant = false;
 
-function Aviso({ titulo, mensaje, alerta }: { titulo: string; mensaje: string; alerta?: boolean }) {
+function Aviso({ titulo, mensaje }: { titulo: string; mensaje: string }) {
   return (
-    <div className="card">
-      <h1 className="titulo mb-4">{titulo}</h1>
-      <p className={alerta ? 'text-terciaria' : 'text-stone-600'}>{mensaje}</p>
+    <div className="regla py-10">
+      <p className="eyebrow-accent">Panel productor</p>
+      <h1 className="titulo mt-3">{titulo}</h1>
+      <p className="plomo mt-4 max-w-xl">{mensaje}</p>
     </div>
   );
 }
@@ -26,7 +28,7 @@ async function ContenidoProductor() {
     return (
       <Aviso
         titulo="Panel Productor"
-        mensaje={`Esta sección es exclusiva para productores. Tu rol actual es ${perfil.rol}.`}
+        mensaje="Esta sección es exclusiva para productores. Tu cuenta no tiene acceso a este espacio."
       />
     );
   }
@@ -43,7 +45,6 @@ async function ContenidoProductor() {
       <Aviso
         titulo="Panel Productor"
         mensaje="No pudimos cargar la información de tu taller. Intenta recargar la página más tarde."
-        alerta
       />
     );
   }
@@ -57,57 +58,95 @@ async function ContenidoProductor() {
       : estado === 'rechazado'
         ? 'Rechazado'
         : 'Pendiente de verificación';
-  const claseEstado = estado === 'aprobado'
-    ? 'bg-green-100 text-secundaria'
-    : 'bg-terciaria/10 text-terciaria';
+  const verificado = estado === 'aprobado';
+
+  const secciones = [
+    {
+      numero: '01',
+      href: '/productor/publicar',
+      titulo: 'Publicar pieza',
+      descripcion: 'Crea la ficha de origen y genera el sello QR de tu pieza.',
+    },
+    {
+      numero: '02',
+      href: '/productor/piezas',
+      titulo: 'Mis piezas',
+      descripcion: 'Revisa el estado, las existencias y las ventas de tu catálogo.',
+    },
+    {
+      numero: '03',
+      href: '/productor/liquidaciones',
+      titulo: 'Liquidaciones',
+      descripcion: 'Consulta comisiones, retenciones y pagos de tus ventas.',
+    },
+  ];
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="titulo">Hola, {perfil.nombreCompleto}</h1>
-        <p className="mt-1 text-stone-600">Gestiona tu taller, publica piezas y revisa liquidaciones.</p>
-      </div>
+    <div className="space-y-12">
+      <header>
+        <p className="eyebrow-accent">Tu espacio de trabajo</p>
+        <h1 className="titulo mt-4">Hola, {perfil.nombreCompleto}</h1>
+        <p className="plomo mt-4 max-w-2xl">Gestiona tu taller, publica piezas y revisa liquidaciones.</p>
+      </header>
 
-      <section className="card flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <p className="label">Estado de verificación</p>
-          <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${claseEstado}`}>
+      <section aria-label="Resumen del taller" className="grid gap-8 sm:grid-cols-[1fr_auto] sm:items-end">
+        <div className="regla pt-8">
+          <p className="eyebrow">Estado de verificación</p>
+          <span
+            className={`mt-4 inline-flex items-center gap-2 border-l-2 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${
+              verificado ? 'border-secundaria text-secundaria' : 'border-terciaria text-terciaria'
+            }`}
+          >
+            {verificado && <span className="size-1.5 bg-secundaria" aria-hidden="true" />}
             {etiquetaEstado}
           </span>
         </div>
-        <div className="flex gap-6">
+
+        <dl className="flex gap-10 sm:gap-14">
           <div>
-            <p className="text-2xl font-bold text-secundaria">{misPiezas}</p>
-            <p className="text-sm text-stone-600">Piezas publicadas</p>
+            <dd className="font-display text-5xl font-semibold leading-none text-terciaria sm:text-6xl">{misPiezas}</dd>
+            <dt className="eyebrow mt-3">Piezas publicadas</dt>
           </div>
           <div>
-            <p className="text-2xl font-bold text-secundaria">{pedidos.length}</p>
-            <p className="text-sm text-stone-600">Pedidos recibidos</p>
+            <dd className="font-display text-5xl font-semibold leading-none text-terciaria sm:text-6xl">{pedidos.length}</dd>
+            <dt className="eyebrow mt-3">Pedidos recibidos</dt>
           </div>
-        </div>
+        </dl>
       </section>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Link href="/productor/publicar" className="card hover:shadow-md transition">
-          <h2 className="font-semibold text-secundaria">Publicar pieza</h2>
-          <p className="mt-1 text-sm text-stone-600">Crea ficha de origen y sello QR</p>
-        </Link>
-        <Link href="/productor/piezas" className="card hover:shadow-md transition">
-          <h2 className="font-semibold text-secundaria">Mis piezas</h2>
-          <p className="mt-1 text-sm text-stone-600">Revisa estado, stock y ventas</p>
-        </Link>
-        <Link href="/productor/liquidaciones" className="card hover:shadow-md transition">
-          <h2 className="font-semibold text-secundaria">Liquidaciones</h2>
-          <p className="mt-1 text-sm text-stone-600">Comisiones 90/10 y retenciones</p>
-        </Link>
-      </div>
+      <section aria-label="Secciones del panel">
+        <p className="eyebrow mb-2">Explora tu panel</p>
+        <div>
+          {secciones.map((seccion) => (
+            <Link
+              key={seccion.href}
+              href={seccion.href}
+              className="regla group flex items-center justify-between gap-6 py-7"
+            >
+              <div className="flex items-start gap-5 sm:gap-8">
+                <span className="eyebrow-accent pt-2">{seccion.numero}</span>
+                <div>
+                  <h2 className="font-display text-2xl font-semibold text-secundaria transition-colors group-hover:text-terciaria sm:text-3xl">
+                    {seccion.titulo}
+                  </h2>
+                  <p className="plomo mt-2 max-w-xl text-sm sm:text-base">{seccion.descripcion}</p>
+                </div>
+              </div>
+              <ArrowRight
+                className="size-6 shrink-0 text-terciaria transition-transform duration-200 group-hover:translate-x-1"
+                aria-hidden="true"
+              />
+            </Link>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
 
 export default function DashboardProductor() {
   return (
-    <Suspense fallback={<div className="card text-stone-600">Cargando panel…</div>}>
+    <Suspense fallback={<div className="regla py-10 plomo">Cargando panel…</div>}>
       <ContenidoProductor />
     </Suspense>
   );

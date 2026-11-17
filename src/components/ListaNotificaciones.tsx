@@ -54,16 +54,16 @@ export default function ListaNotificaciones({ notificaciones }: { notificaciones
 
   if (notificaciones.length === 0) {
     return (
-      <div className="card">
-        <p className="text-stone-600">No tienes notificaciones por ahora.</p>
+      <div className="bloque">
+        <p className="text-tinta-clara">No tienes notificaciones por ahora.</p>
       </div>
     );
   }
 
   return (
-    <div className="card">
+    <div className="bloque">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
-        <p className="text-sm text-stone-600">
+        <p className="text-sm text-tinta-clara">
           {pendientes.length === 0
             ? 'Todas tus notificaciones están leídas.'
             : `${pendientes.length} notificación${pendientes.length === 1 ? '' : 'es'} pendiente${pendientes.length === 1 ? '' : 's'}.`}
@@ -79,19 +79,19 @@ export default function ListaNotificaciones({ notificaciones }: { notificaciones
         </button>
       </div>
 
-      {error && <p className="mb-4 text-sm text-red-700" role="alert">{error}</p>}
+      {error && <p className="mb-4 text-sm text-terciaria" role="alert">{error}</p>}
 
-      <ul className="divide-y divide-stone-200">
+      <ul className="divide-y divide-secundaria/20">
         {notificaciones.map((n) => {
           const leida = leidas.has(n.id);
           return (
             <li key={n.id} className={`flex flex-wrap items-start justify-between gap-4 py-4 ${leida ? 'opacity-70' : ''}`}>
               <div className="flex min-w-0 flex-1 items-start gap-3">
-                <Bell className={`mt-0.5 size-5 shrink-0 ${leida ? 'text-stone-400' : 'text-secundaria'}`} aria-hidden="true" />
+                <Bell className={`mt-0.5 size-5 shrink-0 ${leida ? 'text-secundaria-suave' : 'text-terciaria'}`} aria-hidden="true" />
                 <div className="min-w-0">
                   <p className="font-medium text-secundaria">{n.asunto ?? n.tipo}</p>
-                  <p className="mt-1 text-sm text-stone-600">{n.mensaje}</p>
-                  <p className="mt-1 text-xs text-stone-500">
+                  <p className="mt-1 text-sm text-tinta-clara">{n.mensaje}</p>
+                  <p className="mt-1 text-xs text-tinta-clara">
                     Canal {n.canal} · {fechaLegible(n.created_at)}
                   </p>
                 </div>
