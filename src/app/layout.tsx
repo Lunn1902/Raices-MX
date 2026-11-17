@@ -1,11 +1,7 @@
 import type { Metadata, Viewport } from 'next';
-import { Fraunces, Source_Sans_3 } from 'next/font/google';
 import { Encabezado } from '@/components/Encabezado';
 import ProveedorAccesibilidad from '@/components/ProveedorAccesibilidad';
 import './globals.css';
-
-const texto = Source_Sans_3({ variable: '--font-texto', subsets: ['latin'] });
-const display = Fraunces({ variable: '--font-fraunces', subsets: ['latin'], display: 'swap' });
 
 export const metadata: Metadata = {
   title: { default: 'RaicesMX · Piezas con origen', template: '%s · RaicesMX' },
@@ -16,7 +12,7 @@ export const viewport: Viewport = { themeColor: '#1B4532', width: 'device-width'
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="es-MX" className={`${texto.variable} ${display.variable} h-full antialiased`}>
+    <html lang="es-MX" className="h-full antialiased">
       <body className="flex min-h-full flex-col">
         <ProveedorAccesibilidad>
           <Encabezado />

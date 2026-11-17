@@ -1,6 +1,42 @@
 @import "tailwindcss";
 
 /* ============================================================
+   Tipografia · dos familias de Fontshare (SIL Open Font License)
+   Chubbo Bold  -> titulos: seriedad y presencia
+   Supreme Regular -> cuerpo: cercania y humildad
+   ============================================================ */
+@font-face {
+  font-family: "Chubbo";
+  src: url("/fonts/Chubbo-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Chubbo";
+  src: url("/fonts/Chubbo-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Supreme";
+  src: url("/fonts/Supreme-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Supreme";
+  src: url("/fonts/Supreme-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Supreme";
+  src: url("/fonts/Supreme-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* ============================================================
    RaicesMX · Sistema visual editorial 60 / 30 / 10
    60% fondo crema · 30% verde bosque · 10% coral (acento)
    Principios: jerarquia, espacio en blanco, reglas finas, sin sombras.
@@ -16,8 +52,8 @@
   --color-terciaria-suave: #f4775f;
   --color-tinta: #1B4532;
   --color-tinta-clara: #556d5f;
-  --font-sans: var(--font-texto);
-  --font-display: var(--font-fraunces);
+  --font-sans: "Supreme", system-ui, sans-serif;
+  --font-display: "Chubbo", Georgia, serif;
 }
 
 html {
@@ -32,6 +68,7 @@ body {
 body {
   background: var(--color-fondo);
   color: var(--color-tinta);
+  font-family: var(--font-sans);
   font-feature-settings: "kern" 1, "liga" 1;
 }
 
