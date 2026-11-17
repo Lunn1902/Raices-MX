@@ -37,9 +37,12 @@ export async function middleware(req: NextRequest) {
 
   const { pathname } = req.nextUrl;
 
-  // Rutas públicas
-  const publicPaths = ['/login', '/registro-productor', '/registro', '/catalogo', '/verificar', '/api', '/'];
-  const isPublic = publicPaths.some(p => pathname === p || pathname.startsWith(p + '/'));
+  // Rutas públicas. '/registro' cubre registro-productor, registro-promotor,
+  // registro-admin, registro-comprador-b2c/b2b (todas empiezan con '/registro').
+  const publicPrefixes = ['/login', '/registro', '/catalogo', '/verificar', '/api'];
+  const isPublic =
+    pathname === '/' ||
+    publicPrefixes.some(p => pathname === p || pathname.startsWith(p + '/') || pathname.startsWith(p + '-'));
 
   if (!user && !isPublic) {
     const url = new URL('/login', req.url);
