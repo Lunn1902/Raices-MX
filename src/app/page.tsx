@@ -18,7 +18,7 @@ export default function Inicio() {
         {/* Fondo casi negro-verde: el crema, el blanco y el coral contrastan al máximo */}
         <div
           className="absolute inset-0"
-          style={{ background: 'linear-gradient(90deg, rgba(4,14,9,0.96) 0%, rgba(6,20,12,0.85) 50%, rgba(9,28,18,0.7) 100%)' }}
+          style={{ background: 'linear-gradient(90deg, rgba(4,14,9,0.67) 0%, rgba(6,20,12,0.60) 50%, rgba(9,28,18,0.49) 100%)' }}
         />
         {/* Halo coral tenue: calienta el fondo y hace que el acento destaque */}
         <div
