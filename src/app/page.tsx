@@ -13,11 +13,17 @@ export default function Inicio() {
           fill
           priority
           sizes="100vw"
-          className="object-cover object-[70%_55%] sm:object-[50%_58%]"
+          className="object-cover object-[70%_55%] brightness-[0.45] saturate-[0.7] sm:object-[50%_58%]"
         />
+        {/* Fondo casi negro-verde: el crema, el blanco y el coral contrastan al máximo */}
         <div
           className="absolute inset-0"
-          style={{ background: 'linear-gradient(90deg, rgba(6,19,11,0.88) 0%, rgba(6,19,11,0.55) 45%, rgba(6,19,11,0.12) 100%)' }}
+          style={{ background: 'linear-gradient(90deg, rgba(4,14,9,0.96) 0%, rgba(6,20,12,0.85) 50%, rgba(9,28,18,0.7) 100%)' }}
+        />
+        {/* Halo coral tenue: calienta el fondo y hace que el acento destaque */}
+        <div
+          className="absolute inset-0"
+          style={{ background: 'radial-gradient(circle at 78% 30%, rgba(238,65,41,0.18) 0%, transparent 45%)' }}
         />
 
         <div className="relative mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28 lg:py-36">
