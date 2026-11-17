@@ -1,13 +1,10 @@
 import { connection } from 'next/server';
-import { ErrorNegocio, manejar } from '@/lib/http';
+import { manejar } from '@/lib/http';
 import { perfilSesion } from '@/lib/supabase/sesion';
 
-// GET /api/v1/perfil — perfil del usuario autenticado (para el encabezado)
+// GET /api/v1/perfil — perfil del usuario autenticado (para el encabezado y el carrito).
+// Devuelve 200 con perfil:null cuando no hay sesión, para no ensuciar la consola.
 export async function GET() {
   await connection();
-  return manejar(async () => {
-    const perfil = await perfilSesion();
-    if (!perfil) throw new ErrorNegocio(401, 'Sin sesión');
-    return { perfil };
-  });
+  return manejar(async () => ({ perfil: await perfilSesion() }));
 }

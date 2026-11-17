@@ -22,22 +22,25 @@ export default function RegistroComprador({ rol, titulo, descripcion }: {
     const password = String(form.get('password') || '');
     const nombre = String(form.get('nombre_completo') || '');
 
-    const supabase = supabaseNavegador();
-    const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { nombre_completo: nombre, rol } } });
-    if (error) {
-      setMsg(error.message);
+    const res = await fetch('/api/v1/registro-comprador', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, nombre_completo: nombre, rol }),
+    });
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      setMsg(data.error ?? 'No se pudo crear la cuenta');
       setLoading(false);
       return;
     }
-    if (data.user) {
-      await fetch('/api/v1/usuarios', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ auth_id: data.user.id, correo: email, nombre_completo: nombre, rol, correo_confirmado: true })
-      });
-    }
-    setMsg('Listo. Revisa tu correo para confirmar tu cuenta.');
+
+    // Ingresa automáticamente con la contraseña recién creada
+    const supabase = supabaseNavegador();
+    await supabase.auth.signInWithPassword({ email, password });
+    setMsg('Listo. Tu cuenta está activa, ya puedes agregar piezas al carrito.');
     setLoading(false);
+    window.location.href = rol === 'comprador_b2b' ? '/comprador-b2b' : '/comprador';
   }
 
   return (
