@@ -47,7 +47,7 @@ export default function PublicarPieza() {
     const { sello } = publicada;
     return (
       <div className="card mx-auto max-w-md space-y-3 text-center">
-        <ShieldCheck className="mx-auto size-10 text-milpa" />
+        <ShieldCheck className="mx-auto size-10 text-secundaria" />
         <h1 className="text-xl font-bold">Sello de originalidad emitido</h1>
         <p className="text-stone-700">{publicada.producto.nombre}</p>
         <p className="font-mono text-lg">{sello.folio}</p>
@@ -61,7 +61,7 @@ export default function PublicarPieza() {
           <Link href={sello.url.replace(/^https?:\/\/[^/]+/, '')} className="btn-sec">
             Probar verificación pública
           </Link>
-          <button className="text-sm text-milpa hover:underline" onClick={() => location.reload()}>
+          <button className="text-sm text-secundaria hover:underline" onClick={() => location.reload()}>
             Publicar otra pieza
           </button>
         </div>
@@ -142,12 +142,12 @@ export default function PublicarPieza() {
             </Campo>
           </div>
           {precioNum > 0 && (
-            <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-milpa">
+            <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-secundaria">
               Recibirás <b>{formatoMXN(montoProductorB2C(precioNum))}</b> por pieza (90%). RaicesMX retiene {formatoMXN(precioNum - montoProductorB2C(precioNum))} (10%).
             </p>
           )}
           <Campo etiqueta="9. Fotografía de la pieza" error={err('foto')} ayuda="JPG, PNG o WEBP de máximo 5 MB">
-            <input name="foto" type="file" accept="image/jpeg,image/png,image/webp" className="input file:mr-3 file:rounded file:border-0 file:bg-alabastro file:px-3 file:py-1" />
+            <input name="foto" type="file" accept="image/jpeg,image/png,image/webp" className="input file:mr-3 file:rounded file:border-0 file:bg-fondo file:px-3 file:py-1" />
           </Campo>
           <Campo etiqueta="Historia de la pieza (opcional)">
             <textarea name="historia_pieza" rows={3} className="input" />

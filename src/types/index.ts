@@ -142,3 +142,91 @@ export interface EventoBitacora {
   valor_nuevo?: unknown;
   ip_origen?: string | null;
 }
+
+// --- Seguimiento, liquidaciones y reputación (RF-10 a RF-15) ---
+
+export type EstadoPedido = 'confirmado' | 'en_proceso' | 'en_camino' | 'entregado' | 'cancelado';
+
+export interface PedidoResumen {
+  id: string;
+  folio_pedido: string;
+  tipo: 'B2C' | 'B2B';
+  productor_id: string;
+  nombre_productor: string;
+  estado: EstadoPedido;
+  cantidad_total: number;
+  subtotal: number;
+  total: number;
+  created_at: string;
+}
+
+export interface Liquidacion {
+  id: string;
+  pedido_id: string;
+  productor_id: string;
+  monto_bruto: number;
+  porcentaje_comision: number;
+  monto_comision_plataforma: number;
+  retencion_isr: number;
+  retencion_iva: number;
+  monto_neto_productor: number;
+  fecha_programada: string;
+  liquidado: boolean;
+}
+
+export interface ContratoB2B {
+  id: string;
+  pedido_id: string;
+  folio_contrato: string;
+  monto_anticipo_30: number;
+  monto_saldo_70: number;
+  plazo_entrega_dias: number;
+  condiciones_calidad: string;
+  aceptado_en: string | null;
+}
+
+export interface Notificacion {
+  id: string;
+  usuario_id: string;
+  pedido_id: string | null;
+  canal: 'sistema' | 'correo' | 'sms' | 'whatsapp';
+  tipo: string;
+  asunto: string | null;
+  mensaje: string;
+  estado: 'pendiente' | 'enviada' | 'fallida' | 'leida';
+  leido_en: string | null;
+  created_at: string;
+}
+
+export interface Calificacion {
+  id: string;
+  pedido_id: string;
+  comprador_id: string;
+  productor_id: string;
+  puntuacion: number;
+  comentario: string | null;
+  created_at: string;
+}
+
+export interface Reporte {
+  id: string;
+  generado_por: string | null;
+  tipo: 'ventas' | 'productores' | 'comisiones' | 'auditoria' | 'inventario';
+  formato: 'csv' | 'pdf' | 'xlsx';
+  estado: 'pendiente' | 'generado' | 'error';
+  periodo_inicio: string | null;
+  periodo_fin: string | null;
+  url_archivo: string | null;
+  created_at: string;
+}
+
+export interface Indicadores {
+  productores: number;
+  aprobados: number;
+  pendientes: number;
+  piezas: number;
+  pedidos: number;
+  ventasTotales: number;
+  comisiones: number;
+  calificacionPromedio: number;
+}

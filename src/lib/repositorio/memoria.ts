@@ -4,7 +4,10 @@ import { filtrarPiezas } from '@/modules/catalogo/filtros';
 import { calcularDesgloseB2C } from '@/modules/comisiones/calculo';
 import { agregarPorEstado } from '@/modules/mapa/agregacion';
 import { firmar } from '@/modules/sello-qr/firma';
-import type { EventoBitacora, FichaOrigen, PedidoCreado, PiezaCatalogo, Producto, Productor, SelloOriginalidad } from '@/types';
+import type {
+  Calificacion, ContratoB2B, EventoBitacora, FichaOrigen, Indicadores, Liquidacion, Notificacion,
+  PedidoCreado, PedidoResumen, PiezaCatalogo, Producto, Productor, Reporte, SelloOriginalidad,
+} from '@/types';
 import { PIEZAS, PRODUCTORES } from './semilla';
 import type { Repositorio } from './tipos';
 
@@ -170,5 +173,28 @@ export const repositorioMemoria: Repositorio = {
     const b = db().bitacora;
     // solo se agrega, nunca se modifica (RNF-13)
     b.push(Object.freeze({ ...e, id: b.length + 1, fecha: new Date().toISOString() }));
+  },
+
+  async pedidosPorComprador() { return []; },
+  async pedidosPorProductor() { return []; },
+  async obtenerPedidoResumen() { return null; },
+  async crearPedidoB2B(): Promise<{ pedido: PedidoResumen; contrato: ContratoB2B }> {
+    throw new ErrorNegocio(501, 'Lotes B2B requieren Supabase');
+  },
+  async liquidacionesPorProductor(): Promise<Liquidacion[]> { return []; },
+  async todasLiquidaciones(): Promise<Liquidacion[]> { return []; },
+  async notificacionesPorUsuario(): Promise<Notificacion[]> { return []; },
+  async crearNotificacion() {},
+  async marcarNotificacionLeida() {},
+  async calificacionesPorProductor(): Promise<Calificacion[]> { return []; },
+  async crearCalificacion() {},
+  async reportes(): Promise<Reporte[]> { return []; },
+  async crearReporte(r): Promise<Reporte> {
+    return { id: crypto.randomUUID(), generado_por: r.generadoPor, tipo: r.tipo, formato: r.formato,
+      estado: 'generado', periodo_inicio: null, periodo_fin: null, url_archivo: null, created_at: new Date().toISOString() };
+  },
+  async indicadores(): Promise<Indicadores> {
+    return { productores: 0, aprobados: 0, pendientes: 0, piezas: 0, pedidos: 0,
+      ventasTotales: 0, comisiones: 0, calificacionPromedio: 0 };
   },
 };

@@ -45,7 +45,7 @@ export default function Carrito() {
   if (pedidos) {
     return (
       <div className="card mx-auto max-w-lg space-y-3 text-center">
-        <CheckCircle2 className="mx-auto size-12 text-milpa" />
+        <CheckCircle2 className="mx-auto size-12 text-secundaria" />
         <h1 className="text-xl font-bold">Pago de prueba aprobado</h1>
         {pedidos.map((p) => (
           <p key={p.pedido_id} className="text-sm">
@@ -98,7 +98,7 @@ export default function Carrito() {
       <aside className="card h-fit space-y-3">
         <h2 className="font-semibold">Desglose transparente</h2>
         {cotizacion?.pedidos.map((p) => (
-          <div key={p.productor_id} className="rounded-lg bg-alabastro p-3 text-sm">
+          <div key={p.productor_id} className="rounded-lg bg-fondo p-3 text-sm">
             <p className="mb-1 font-medium">{p.nombre_productor}</p>
             <Fila etiqueta="Subtotal piezas" valor={p.subtotal} />
             <Fila etiqueta="Para el productor (90%)" valor={p.montoProductor} destacado />
@@ -133,7 +133,7 @@ export default function Carrito() {
 
 function Fila({ etiqueta, valor, destacado }: { etiqueta: string; valor: number; destacado?: boolean }) {
   return (
-    <div className={`flex justify-between ${destacado ? 'font-semibold text-milpa' : ''}`}>
+    <div className={`flex justify-between ${destacado ? 'font-semibold text-secundaria' : ''}`}>
       <span>{etiqueta}</span>
       <span>{formatoMXN(valor)}</span>
     </div>

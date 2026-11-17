@@ -1,7 +1,10 @@
 import { ErrorNegocio } from '@/lib/http';
 import { supabaseServidor } from '@/lib/supabase/servidor';
 import { normalizar } from '@/modules/catalogo/filtros';
-import type { FichaOrigen, PiezaCatalogo, Producto, Productor, SelloOriginalidad } from '@/types';
+import type {
+  Calificacion, FichaOrigen, Liquidacion, Notificacion, PedidoResumen, PiezaCatalogo,
+  Producto, Productor, Reporte, SelloOriginalidad,
+} from '@/types';
 import type { Repositorio } from './tipos';
 
 const sb = () => supabaseServidor();
@@ -190,4 +193,181 @@ export const repositorioSupabase: Repositorio = {
     });
     fallo(error, 'Bitácora');
   },
+
+  async pedidosPorComprador(compradorId) {
+    const { data, error } = await sb()
+      .from('pedidos')
+      .select('id, folio_pedido, tipo, productor_id, estado, cantidad_total, subtotal, total, created_at, productor:perfiles_productor(usuario_id, nombre_taller, usuarios(nombre_completo))')
+      .eq('comprador_id', compradorId)
+      .order('created_at', { ascending: false });
+    fallo(error, 'Pedidos del comprador');
+    return (data ?? []).map((r: any) => ({
+      id: r.id, folio_pedido: r.folio_pedido, tipo: r.tipo, productor_id: r.productor_id,
+      estado: r.estado, cantidad_total: r.cantidad_total, subtotal: Number(r.subtotal),
+      total: Number(r.total), created_at: r.created_at,
+      nombre_productor: r.productor?.nombre_taller ?? r.productor?.usuarios?.nombre_completo ?? 'Productor',
+    }));
+  },
+
+  async pedidosPorProductor(productorId) {
+    const { data, error } = await sb()
+      .from('pedidos')
+      .select('id, folio_pedido, tipo, productor_id, estado, cantidad_total, subtotal, total, created_at, productor:perfiles_productor(usuario_id, nombre_taller, usuarios(nombre_completo))')
+      .eq('productor_id', productorId)
+      .order('created_at', { ascending: false });
+    fallo(error, 'Pedidos del productor');
+    return (data ?? []).map((r: any) => ({
+      id: r.id, folio_pedido: r.folio_pedido, tipo: r.tipo, productor_id: r.productor_id,
+      estado: r.estado, cantidad_total: r.cantidad_total, subtotal: Number(r.subtotal),
+      total: Number(r.total), created_at: r.created_at,
+      nombre_productor: r.productor?.nombre_taller ?? r.productor?.usuarios?.nombre_completo ?? 'Productor',
+    }));
+  },
+
+  async crearPedidoB2B(entrada) {
+    const folio = `PED-B2B-${new Date().getFullYear()}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+    const folioContrato = `CONT-${new Date().getFullYear()}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+    const { data: pedido, error: e1 } = await sb().from('pedidos').insert({
+      folio_pedido: folio, tipo: 'B2B', comprador_id: entrada.compradorId, productor_id: entrada.productorId,
+      estado: 'confirmado', direccion_entrega: entrada.direccion, cantidad_total: entrada.cantidad,
+      porcentaje_descuento: entrada.descuento, subtotal: entrada.subtotal,
+      monto_descuento: entrada.subtotal - entrada.total, total: entrada.total,
+      monto_productor: entrada.total - entrada.comision, monto_comision: entrada.comision,
+    }).select().single();
+    fallo(e1, 'Alta de pedido B2B');
+    const { error: e2 } = await sb().from('detalles_pedido').insert({
+      pedido_id: pedido.id, producto_id: entrada.productoId, cantidad: entrada.cantidad,
+      precio_unitario: entrada.precioUnitario, subtotal: entrada.subtotal,
+    });
+    fallo(e2, 'Detalle del pedido B2B');
+    const { error: e3 } = await sb().from('pagos').insert([
+      { pedido_id: pedido.id, tipo_cobro: 'anticipo_30_b2b', metodo: 'spei', monto: entrada.anticipo30, estado: 'pendiente' },
+      { pedido_id: pedido.id, tipo_cobro: 'saldo_70_b2b', metodo: 'spei', monto: entrada.saldo70, estado: 'pendiente' },
+    ]);
+    fallo(e3, 'Registro de pagos');
+    const { data: contrato, error: e4 } = await sb().from('contratos_b2b').insert({
+      pedido_id: pedido.id, folio_contrato: folioContrato, monto_anticipo_30: entrada.anticipo30,
+      monto_saldo_70: entrada.saldo70, plazo_entrega_dias: entrada.plazoDias, condiciones_calidad: entrada.condiciones,
+    }).select().single();
+    fallo(e4, 'Alta de contrato B2B');
+    const { data: liq, error: e5 } = await sb().from('liquidaciones').insert({
+      pedido_id: pedido.id, productor_id: entrada.productorId, monto_bruto: entrada.total,
+      porcentaje_comision: 5.00, monto_comision_plataforma: entrada.comision,
+      retencion_isr: 0, retencion_iva: 0, monto_neto_productor: entrada.total - entrada.comision,
+      fecha_programada: new Date(Date.now() + entrada.plazoDias * 86400000).toISOString().slice(0, 10),
+    }).select().single();
+    fallo(e5, 'Alta de liquidación');
+    void liq;
+    const resumen = await this.obtenerPedidoResumen(pedido.id);
+    return { pedido: resumen!, contrato };
+  },
+
+  async obtenerPedidoResumen(id: string) {
+    const { data, error } = await sb()
+      .from('pedidos')
+      .select('id, folio_pedido, tipo, productor_id, estado, cantidad_total, subtotal, total, created_at, productor:perfiles_productor(usuario_id, nombre_taller, usuarios(nombre_completo))')
+      .eq('id', id).maybeSingle();
+    fallo(error, 'Consulta de pedido');
+    if (!data) return null;
+    const r = data as any;
+    return {
+      id: r.id, folio_pedido: r.folio_pedido, tipo: r.tipo, productor_id: r.productor_id,
+      estado: r.estado, cantidad_total: r.cantidad_total, subtotal: Number(r.subtotal),
+      total: Number(r.total), created_at: r.created_at,
+      nombre_productor: r.productor?.nombre_taller ?? r.productor?.usuarios?.nombre_completo ?? 'Productor',
+    };
+  },
+
+  async liquidacionesPorProductor(productorId) {
+    const { data, error } = await sb().from('liquidaciones').select('*').eq('productor_id', productorId).order('created_at', { ascending: false });
+    fallo(error, 'Liquidaciones');
+    return (data ?? []).map(normalizarLiquidacion);
+  },
+
+  async todasLiquidaciones() {
+    const { data, error } = await sb().from('liquidaciones').select('*').order('created_at', { ascending: false });
+    fallo(error, 'Liquidaciones');
+    return (data ?? []).map(normalizarLiquidacion);
+  },
+
+  async notificacionesPorUsuario(usuarioId) {
+    const { data, error } = await sb().from('notificaciones').select('*').eq('usuario_id', usuarioId).order('created_at', { ascending: false }).limit(50);
+    fallo(error, 'Notificaciones');
+    return (data ?? []) as unknown as Notificacion[];
+  },
+
+  async crearNotificacion(n) {
+    const { error } = await sb().from('notificaciones').insert({
+      usuario_id: n.usuarioId, tipo: n.tipo, asunto: n.asunto ?? null, mensaje: n.mensaje,
+      pedido_id: n.pedidoId ?? null, canal: 'sistema', estado: 'enviada', enviado_en: new Date().toISOString(),
+    });
+    fallo(error, 'Crear notificación');
+  },
+
+  async marcarNotificacionLeida(id, usuarioId) {
+    const { error } = await sb().from('notificaciones').update({ estado: 'leida', leido_en: new Date().toISOString() }).eq('id', id).eq('usuario_id', usuarioId);
+    fallo(error, 'Marcar notificación');
+  },
+
+  async calificacionesPorProductor(productorId) {
+    const { data, error } = await sb().from('calificaciones').select('*').eq('productor_id', productorId).order('created_at', { ascending: false });
+    fallo(error, 'Calificaciones');
+    return (data ?? []) as unknown as Calificacion[];
+  },
+
+  async crearCalificacion(c) {
+    const { error } = await sb().from('calificaciones').insert({
+      pedido_id: c.pedidoId, comprador_id: c.compradorId, productor_id: c.productorId,
+      puntuacion: c.puntuacion, comentario: c.comentario ?? null,
+    });
+    fallo(error, 'Crear calificación');
+    const { error: e2 } = await sb().rpc('recalcular_promedio_productor', { p_productor_id: c.productorId });
+    if (e2) console.warn('No se pudo recalcular promedio:', e2.message);
+  },
+
+  async reportes() {
+    const { data, error } = await sb().from('reportes').select('*').order('created_at', { ascending: false }).limit(50);
+    fallo(error, 'Reportes');
+    return (data ?? []) as unknown as Reporte[];
+  },
+
+  async crearReporte(r) {
+    const { data, error } = await sb().from('reportes').insert({
+      generado_por: r.generadoPor, tipo: r.tipo, formato: r.formato, estado: 'generado', generado_en: new Date().toISOString(),
+    }).select().single();
+    fallo(error, 'Crear reporte');
+    return data as Reporte;
+  },
+
+  async indicadores() {
+    const [prod, piezas, pedidos, cal] = await Promise.all([
+      sb().from('perfiles_productor').select('estado_verificacion'),
+      sb().from('productos').select('id', { count: 'exact', head: true }),
+      sb().from('pedidos').select('total, monto_comision'),
+      sb().from('calificaciones').select('puntuacion'),
+    ]);
+    const estados = (prod.data ?? []) as { estado_verificacion: string }[];
+    const ped = (pedidos.data ?? []) as { total: string; monto_comision: string }[];
+    const califs = (cal.data ?? []) as { puntuacion: number }[];
+    return {
+      productores: estados.length,
+      aprobados: estados.filter((e) => e.estado_verificacion === 'aprobado').length,
+      pendientes: estados.filter((e) => e.estado_verificacion === 'pendiente').length,
+      piezas: piezas.count ?? 0,
+      pedidos: ped.length,
+      ventasTotales: ped.reduce((a, p) => a + Number(p.total), 0),
+      comisiones: ped.reduce((a, p) => a + Number(p.monto_comision), 0),
+      calificacionPromedio: califs.length ? califs.reduce((a, c) => a + c.puntuacion, 0) / califs.length : 0,
+    };
+  },
 };
+
+function normalizarLiquidacion(r: any): Liquidacion {
+  return {
+    id: r.id, pedido_id: r.pedido_id, productor_id: r.productor_id,
+    monto_bruto: Number(r.monto_bruto), porcentaje_comision: Number(r.porcentaje_comision),
+    monto_comision_plataforma: Number(r.monto_comision_plataforma), retencion_isr: Number(r.retencion_isr),
+    retencion_iva: Number(r.retencion_iva), monto_neto_productor: Number(r.monto_neto_productor),
+    fecha_programada: r.fecha_programada, liquidado: r.liquidado,
+  };
+}

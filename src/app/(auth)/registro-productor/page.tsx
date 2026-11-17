@@ -37,7 +37,7 @@ export default function RegistroProductor() {
   if (registrado) {
     return (
       <div className="card mx-auto max-w-lg text-center">
-        <CheckCircle2 className="mx-auto mb-2 size-12 text-milpa" />
+        <CheckCircle2 className="mx-auto mb-2 size-12 text-secundaria" />
         <h1 className="text-xl font-bold">Solicitud recibida</h1>
         <p className="mt-2 text-stone-700">
           {registrado.nombre_completo}, tu taller <b>{registrado.nombre_taller}</b> quedó en estado <b>pendiente</b>.

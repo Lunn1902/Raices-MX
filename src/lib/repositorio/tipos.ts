@@ -1,6 +1,7 @@
 import type {
-  ConteoEstado, EstadoVerificacion, EventoBitacora, FichaOrigen, FiltrosCatalogo, ItemCarrito,
-  PedidoCreado, PiezaCatalogo, Producto, Productor, RegistroSello, SelloOriginalidad,
+  Calificacion, ConteoEstado, ContratoB2B, EstadoVerificacion, EventoBitacora, FichaOrigen,
+  FiltrosCatalogo, Indicadores, ItemCarrito, Liquidacion, Notificacion, PedidoCreado,
+  PedidoResumen, PiezaCatalogo, Producto, Productor, RegistroSello, Reporte, SelloOriginalidad,
 } from '@/types';
 
 // Contrato de persistencia. Los módulos de dominio solo conocen esta interfaz,
@@ -20,4 +21,25 @@ export interface Repositorio {
   conteoPorEstado(): Promise<ConteoEstado[]>;
   crearPedidosB2C(compradorId: string, direccion: string, items: ItemCarrito[], envioPorPedido: number): Promise<PedidoCreado[]>;
   registrarBitacora(e: EventoBitacora): Promise<void>;
+
+  // Seguimiento, lotes B2B, liquidaciones, reputación y reportes
+  pedidosPorComprador(compradorId: string): Promise<PedidoResumen[]>;
+  pedidosPorProductor(productorId: string): Promise<PedidoResumen[]>;
+  obtenerPedidoResumen(id: string): Promise<PedidoResumen | null>;
+  crearPedidoB2B(entrada: {
+    compradorId: string; productorId: string; productoId: string; cantidad: number;
+    precioUnitario: number; descuento: number; subtotal: number; total: number;
+    anticipo30: number; saldo70: number; comision: number; direccion: string; plazoDias: number;
+    condiciones: string;
+  }): Promise<{ pedido: PedidoResumen; contrato: ContratoB2B }>;
+  liquidacionesPorProductor(productorId: string): Promise<Liquidacion[]>;
+  todasLiquidaciones(): Promise<Liquidacion[]>;
+  notificacionesPorUsuario(usuarioId: string): Promise<Notificacion[]>;
+  crearNotificacion(n: { usuarioId: string; tipo: string; asunto?: string; mensaje: string; pedidoId?: string }): Promise<void>;
+  marcarNotificacionLeida(id: string, usuarioId: string): Promise<void>;
+  calificacionesPorProductor(productorId: string): Promise<Calificacion[]>;
+  crearCalificacion(c: { pedidoId: string; compradorId: string; productorId: string; puntuacion: number; comentario?: string }): Promise<void>;
+  reportes(): Promise<Reporte[]>;
+  crearReporte(r: { generadoPor: string; tipo: Reporte['tipo']; formato: Reporte['formato'] }): Promise<Reporte>;
+  indicadores(): Promise<Indicadores>;
 }

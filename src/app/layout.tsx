@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description: 'Comercio directo y verificable con productores originarios de México.',
 };
 
-export const viewport: Viewport = { themeColor: '#2f6b3b', width: 'device-width', initialScale: 1 };
+export const viewport: Viewport = { themeColor: '#1B4532', width: 'device-width', initialScale: 1 };
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (

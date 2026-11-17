@@ -1,4 +1,3 @@
-import { USUARIOS_DEMO } from '@/lib/config';
 import { ErrorNegocio } from '@/lib/http';
 import { repo } from '@/lib/repositorio';
 import { esquemaCarrito, esquemaCompra } from '@/lib/validadores';
@@ -50,16 +49,24 @@ export async function cotizar(entrada: unknown): Promise<Cotizacion> {
   };
 }
 
-export async function comprar(entrada: unknown) {
+export async function comprar(entrada: unknown, compradorId: string) {
   const datos = esquemaCompra.parse(entrada);
   const cotizacion = await cotizar(datos);
   try {
     const pedidos = await repo().crearPedidosB2C(
-      USUARIOS_DEMO.comprador,
+      compradorId,
       datos.direccion_entrega,
       consolidar(datos.items),
       ENVIO_B2C_POR_PEDIDO,
     );
+    // RF-13: notificación de pedido confirmado
+    await repo().crearNotificacion({
+      usuarioId: compradorId,
+      tipo: 'pedido_confirmado',
+      asunto: 'Pedido confirmado',
+      mensaje: `Tu pedido ${pedidos[0]?.folio_pedido ?? ''} fue confirmado. Gracias por apoyar el origen.`,
+      pedidoId: pedidos[0]?.pedido_id,
+    });
     return { pedidos, totales: cotizacion.totales };
   } catch (e) {
     if (e instanceof ErrorNegocio && e.message === 'STOCK_INSUFICIENTE') {

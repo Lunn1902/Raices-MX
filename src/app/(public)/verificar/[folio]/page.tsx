@@ -45,9 +45,9 @@ export default async function Verificar({ params, searchParams }: PageProps<'/ve
   return (
     <div className="mx-auto max-w-3xl space-y-4">
       <div className="card flex items-center gap-4 border-green-300 bg-green-50">
-        <ShieldCheck className="size-14 shrink-0 text-milpa" />
+        <ShieldCheck className="size-14 shrink-0 text-secundaria" />
         <div>
-          <h1 className="text-2xl font-bold text-milpa">{r.etiqueta}</h1>
+          <h1 className="text-2xl font-bold text-secundaria">{r.etiqueta}</h1>
           <p className="font-mono text-sm">{r.folio}</p>
           <p className="text-xs text-stone-600">
             Emitido el {new Date(r.fecha_emision!).toLocaleDateString('es-MX', { dateStyle: 'long' })} · firma HMAC-SHA256 válida
@@ -59,7 +59,7 @@ export default async function Verificar({ params, searchParams }: PageProps<'/ve
         {/* eslint-disable-next-line @next/next/no-img-element -- en modo demo las fotos son data URLs */}
         <img src={ficha.fotografias_urls[0]} alt={producto.nombre} className="aspect-square w-full rounded-lg object-cover" />
         <div>
-          <p className="text-xs font-medium uppercase text-barro">{producto.categoria}</p>
+          <p className="text-xs font-medium uppercase text-secundaria">{producto.categoria}</p>
           <h2 className="mb-3 text-xl font-semibold">{producto.nombre}</h2>
           <dl className="space-y-1.5 text-sm">
             {datos.map(([k, v]) => (
@@ -84,7 +84,7 @@ export default async function Verificar({ params, searchParams }: PageProps<'/ve
         <p className="text-sm text-stone-700">
           {productor.nombre_completo} · {productor.comunidad}, {productor.estado} · Pueblo {productor.pueblo_originario}
         </p>
-        <Link href={`/catalogo?estado=${encodeURIComponent(productor.estado)}`} className="mt-2 inline-block text-sm text-barro hover:underline">
+        <Link href={`/catalogo?estado=${encodeURIComponent(productor.estado)}`} className="mt-2 inline-block text-sm text-secundaria hover:underline">
           Ver más piezas de {productor.estado} →
         </Link>
       </section>

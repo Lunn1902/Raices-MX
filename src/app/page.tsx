@@ -68,7 +68,7 @@ export default function Inicio() {
   return (
     <div className="space-y-14 pb-6">
       {/* Hero a todo lo ancho: rompe el contenedor de 6xl del layout */}
-      <section className="relative left-1/2 -mt-6 w-screen -translate-x-1/2 overflow-hidden bg-milpa-oscuro text-white">
+      <section className="relative left-1/2 -mt-6 w-screen -translate-x-1/2 overflow-hidden bg-secundaria text-white">
         <Image
           src="/img/hero-campo.jpg"
           alt=""
@@ -93,7 +93,7 @@ export default function Inicio() {
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link
               href="/catalogo"
-              className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-milpa-oscuro transition hover:bg-alabastro"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-secundaria transition hover:bg-fondo"
             >
               Explorar el catálogo <ArrowUpRight className="size-4" />
             </Link>
@@ -133,7 +133,7 @@ export default function Inicio() {
       <section>
         <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-milpa">Versión 1</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-secundaria">Versión 1</p>
             <h2 className="mt-1 font-display text-3xl font-semibold tracking-tight text-tinta sm:text-4xl">
               Compras al por mayor y al por menor en un solo lugar
             </h2>
@@ -147,7 +147,7 @@ export default function Inicio() {
           {CASOS.map(({ cu, titulo, resumen, href, Icono, foto, posicion, ancho, extra }) => (
             <article
               key={cu}
-              className={`group relative flex min-h-[15rem] flex-col justify-between overflow-hidden rounded-2xl bg-milpa-oscuro p-5 text-white shadow-sm ring-1 ring-black/5 transition duration-300 hover:-translate-y-1 hover:shadow-xl ${ancho}`}
+              className={`group relative flex min-h-[15rem] flex-col justify-between overflow-hidden rounded-2xl bg-secundaria p-5 text-white shadow-sm ring-1 ring-black/5 transition duration-300 hover:-translate-y-1 hover:shadow-xl ${ancho}`}
             >
               {foto ? (
                 <Image
@@ -201,3 +201,4 @@ export default function Inicio() {
     </div>
   );
 }
+
