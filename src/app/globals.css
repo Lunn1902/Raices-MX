@@ -120,3 +120,148 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ============================================================
+   Accesibilidad — atributos data-* aplicados por
+   ProveedorAccesibilidad a <html>. Jerarquía de capas del panel:
+   pestaña 1150 · overlay 1160 · drawer 1170 (clases en el componente).
+   ============================================================ */
+
+/* --- Tamaño de letra --- */
+html[data-font-size='large'] {
+  font-size: 150%;
+}
+html[data-font-size='xlarge'] {
+  font-size: 200%;
+}
+
+/* --- Alto contraste: negro / blanco / amarillo --- */
+html[data-contrast='high'] {
+  --color-fondo: #000000;
+  --color-fondo-claro: #000000;
+  --color-secundaria: #ffffff;
+  --color-secundaria-oscuro: #ffffff;
+  --color-secundaria-suave: #ffffff;
+  --color-terciaria: #ffcc00;
+  --color-terciaria-suave: #ffcc00;
+  --color-tinta: #ffffff;
+  --color-tinta-clara: #ffffff;
+  --color-white: #000000;
+}
+html[data-contrast='high'] body {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+/* Botones rellenos: verde -> blanco con texto negro; coral -> amarillo con texto negro */
+html[data-contrast='high'] [class~='bg-secundaria'] {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #ffffff !important;
+}
+html[data-contrast='high'] [class~='bg-terciaria'] {
+  background-color: #ffcc00 !important;
+  color: #000000 !important;
+  border: 2px solid #ffcc00 !important;
+}
+/* Texto institucional -> blanco sobre negro */
+html[data-contrast='high'] [class*='text-secundaria'],
+html[data-contrast='high'] [class*='text-tinta'] {
+  color: #ffffff !important;
+}
+/* Superficies claras -> negras con borde blanco */
+html[data-contrast='high'] [class~='bg-fondo'] {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+html[data-contrast='high'] [class~='bg-fondo-claro'],
+html[data-contrast='high'] [class~='bg-white'] {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 1px solid #ffffff !important;
+}
+/* Reglas y bordes finos -> blancos */
+html[data-contrast='high'] [class~='regla'],
+html[data-contrast='high'] [class~='regla-accent'] {
+  border-color: #ffffff !important;
+}
+/* Enlaces de texto subrayados y amarillos (se excluyen los botones-enlace) */
+html[data-contrast='high'] a[href]:not([class~='btn']):not([class~='btn-accent']):not([class~='btn-sec']) {
+  color: #ffcc00 !important;
+  text-decoration: underline !important;
+  text-underline-offset: 3px !important;
+}
+/* Foco siempre visible: amarillo grueso (WCAG 2.4.7) */
+html[data-contrast='high'] :focus-visible {
+  outline: 3px solid #ffcc00 !important;
+  outline-offset: 2px !important;
+}
+/* Fotos en negativo: el filtro va en cada <img>, nunca en un contenedor,
+   para que ningún elemento position:fixed se desposicione. */
+html[data-contrast='high'] body img {
+  filter: invert(100%);
+}
+html[data-contrast='high'] ::selection {
+  background: #ffcc00 !important;
+  color: #000000 !important;
+}
+
+/* --- Opciones visuales estilo Inklusion --- */
+/* Escala de grises: se filtra cada raíz fija por separado (nunca un ancestro),
+   porque `filter` en un ancestro convierte `position:fixed` en relativo. */
+html[data-grayscale='on'] body > header,
+html[data-grayscale='on'] body > main,
+html[data-grayscale='on'] body > footer,
+html[data-grayscale='on'] [data-gris] {
+  filter: grayscale(1);
+}
+
+/* Subrayar enlaces */
+html[data-underline-links='on'] a {
+  text-decoration: underline !important;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+
+/* Fuente legible: sans genérica con más aire */
+html[data-readable-font='on'] body {
+  font-family: Arial, Helvetica, Verdana, sans-serif !important;
+  letter-spacing: 0.02em;
+  word-spacing: 0.06em;
+  line-height: 1.65;
+}
+
+/* Pausar animaciones y transiciones CSS */
+html[data-pause-animations='on'] *,
+html[data-pause-animations='on'] *::before,
+html[data-pause-animations='on'] *::after {
+  animation-play-state: paused !important;
+  transition: none !important;
+}
+
+/* === Refinamiento A++ (xlarge 200%) ===
+   A 200% los contenedores de ancho fijo recortan texto: se ensancha el panel,
+   se apilan los grids densos y se permite el corte seguro de textos largos. */
+html[data-font-size='xlarge'] aside[aria-label='Panel de accesibilidad'],
+html[data-font-size='xlarge'] .panel-accesibilidad-deslizante {
+  width: min(430px, 96vw) !important;
+}
+html[data-font-size='xlarge'] aside[aria-label='Panel de accesibilidad'] h2.truncate {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+html[data-font-size='xlarge'] aside[aria-label='Panel de accesibilidad'] section .flex.gap-2 {
+  flex-wrap: wrap !important;
+}
+html[data-font-size='xlarge'] aside[aria-label='Panel de accesibilidad'] section .flex.gap-2 > button {
+  flex: 1 1 9rem !important;
+}
+/* Grids densos: 4 -> 1 columna en A++ */
+html[data-font-size='xlarge'] main [class*='grid-cols-4'],
+html[data-font-size='xlarge'] footer [class*='grid-cols-4'] {
+  grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+}
+html[data-font-size='xlarge'] footer a {
+  overflow-wrap: anywhere !important;
+}

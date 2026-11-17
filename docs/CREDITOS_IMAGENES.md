@@ -9,5 +9,6 @@ Las fotografías del inicio vienen de **Wikimedia Commons** y se usan bajo licen
 | `public/img/cu-04-piezas.jpg` | [Las Cazuelas de barro](https://commons.wikimedia.org/wiki/File:Las_Cazuelas_de_barro.jpg) | Abel SGarcía | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
 | `public/img/cu-07-catalogo.jpg` | [Blusas del mercado](https://commons.wikimedia.org/wiki/File:Blusas_del_mercado.jpg) | Carla Regina Torres | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
 | `public/img/cu-08-compra-mercado.jpg` | [Tlacolula Market 230122 8](https://commons.wikimedia.org/wiki/File:Tlacolula_Market_230122_8.jpg) | Bluerasberry | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| `public/img/login-telar.jpg` | [Woman on a backstrap loom in Oaxaca](https://commons.wikimedia.org/wiki/File:Woman_on_a_backstrap_loom_in_Oaxaca.jpg) | David.Clay.Photography | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
 
 Las ilustraciones de `public/piezas/*.svg` (textiles, cerámica y palma) son dibujos propios del equipo y no tienen crédito externo.
