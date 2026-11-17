@@ -27,6 +27,12 @@ export default function DashboardAdmin() {
       titulo: 'Notificaciones',
       descripcion: 'Avisos del sistema para tu cuenta de administrador.',
     },
+    {
+      numero: '05',
+      href: '/promotor',
+      titulo: 'Verificación de artesanos',
+      descripcion: 'Aprueba o rechaza los registros pendientes tras visitar el domicilio del artesano.',
+    },
   ];
 
   return (

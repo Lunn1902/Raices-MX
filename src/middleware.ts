@@ -68,14 +68,15 @@ export async function middleware(req: NextRequest) {
   }
 
   // Protección de secciones por rol
-  const rutasPorRol: Record<string, string> = {
-    productor: '/productor',
-    promotor: '/promotor',
-    comprador_b2c: '/comprador',
-    comprador_b2b: '/comprador-b2b',
-    admin: '/admin',
+  const rutasPorRol: Record<string, string[]> = {
+    productor: ['/productor'],
+    promotor: ['/promotor'],
+    comprador_b2c: ['/comprador'],
+    comprador_b2b: ['/comprador-b2b'],
+    // El administrador también puede verificar artesanos
+    admin: ['/admin', '/promotor'],
   };
-  const prefijos = Object.values(rutasPorRol);
+  const prefijos = [...new Set(Object.values(rutasPorRol).flat())];
   const seccion = prefijos.find(p => pathname === p || pathname.startsWith(p + '/'));
 
   if (user && seccion) {
@@ -86,9 +87,10 @@ export async function middleware(req: NextRequest) {
       .maybeSingle();
 
     const rol = perfil?.rol;
-    const permitida = rol ? rutasPorRol[rol] : null;
-    if (permitida && seccion !== permitida) {
-      return NextResponse.redirect(new URL(permitida, req.url));
+    const permitidas = rol ? rutasPorRol[rol] ?? [] : [];
+    const dentro = permitidas.some(p => p === seccion);
+    if (!dentro && permitidas.length > 0) {
+      return NextResponse.redirect(new URL(permitidas[0], req.url));
     }
   }
 
