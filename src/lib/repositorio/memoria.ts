@@ -90,10 +90,10 @@ export const repositorioMemoria: Repositorio = {
     return db().productores.some((p) => p.correo.toLowerCase() === correo.toLowerCase());
   },
 
-  async registrarVerificacion(productorId, _promotorId, estado) {
+  async registrarVerificacion(productorId, _promotorId, datos) {
     const p = db().productores.find((x) => x.id === productorId);
     if (!p) throw new ErrorNegocio(404, 'Productor no encontrado');
-    p.estado_verificacion = estado;
+    p.estado_verificacion = datos.estado;
     return p;
   },
 

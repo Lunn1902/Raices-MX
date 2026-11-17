@@ -1,5 +1,5 @@
 import type {
-  Calificacion, ConteoEstado, ContratoB2B, EstadoVerificacion, EventoBitacora, FichaOrigen,
+  Calificacion, ConteoEstado, ContratoB2B, DatosVerificacion, EstadoVerificacion, EventoBitacora, FichaOrigen,
   FiltrosCatalogo, Indicadores, ItemCarrito, Liquidacion, Notificacion, PedidoCreado,
   PedidoResumen, PiezaCatalogo, Producto, Productor, RegistroSello, Reporte, SelloOriginalidad,
 } from '@/types';
@@ -12,7 +12,7 @@ export interface Repositorio {
   listarProductores(estado?: EstadoVerificacion): Promise<Productor[]>;
   obtenerProductor(id: string): Promise<Productor | null>;
   existeCorreo(correo: string): Promise<boolean>;
-  registrarVerificacion(productorId: string, promotorId: string, estado: EstadoVerificacion, observaciones?: string): Promise<Productor>;
+  registrarVerificacion(productorId: string, promotorId: string, datos: DatosVerificacion): Promise<Productor>;
   subirFoto(ruta: string, foto: File): Promise<string>;
   guardarPieza(p: { producto: Producto; ficha: FichaOrigen; sello: SelloOriginalidad; capturadoPor: string }): Promise<void>;
   catalogo(f: FiltrosCatalogo): Promise<PiezaCatalogo[]>;

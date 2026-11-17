@@ -15,32 +15,32 @@ export const PRODUCTORES: Productor[] = [
   {
     id: uid(11), nombre_completo: 'María Francisca Cruz Hernández', correo: 'telar.masehual@correo.mx', telefono: '2333310021',
     nombre_taller: 'Telar Masehual', identificacion_oficial: 'CUHF780412MPLRRR05', comunidad: 'Cuetzalan del Progreso',
-    estado: 'Puebla', pueblo_originario: 'Nahua', tecnica_principal: 'Telar de cintura', estado_verificacion: 'aprobado', created_at: fecha,
+    estado: 'Puebla', direccion: 'Calle Zaragoza 24, Centro, Cuetzalan del Progreso, Puebla. C.P. 73540', referencias_direccion: 'Casa con fachada amarilla, a 50 m del mercado', latitud: null, longitud: null, pueblo_originario: 'Nahua', tecnica_principal: 'Telar de cintura', estado_verificacion: 'aprobado', created_at: fecha,
   },
   {
     id: uid(12), nombre_completo: 'Juan Carlos Rodríguez Lima', correo: 'alfareria.rodriguez@correo.mx', telefono: '9534410982',
     nombre_taller: 'Alfarería Mixteca Rodríguez', identificacion_oficial: 'ROLJ850907HPLDMN02', comunidad: 'Acatlán de Osorio',
-    estado: 'Puebla', pueblo_originario: 'Mixteco', tecnica_principal: 'Barro bruñido', estado_verificacion: 'aprobado', created_at: fecha,
+    estado: 'Puebla', direccion: 'Calle 5 de Mayo 18, Barrio San Juan, Acatlán de Osorio, Puebla. C.P. 74900', referencias_direccion: 'Frente a la iglesia de San Juan', latitud: null, longitud: null, pueblo_originario: 'Mixteco', tecnica_principal: 'Barro bruñido', estado_verificacion: 'aprobado', created_at: fecha,
   },
   {
     id: uid(13), nombre_completo: 'Guadalupe Martínez Ramos', correo: 'palma.ngigua@correo.mx', telefono: '2383127745',
     nombre_taller: 'Palma Ngigua', identificacion_oficial: 'MARG690224MPLRMD08', comunidad: 'San Gabriel Chilac',
-    estado: 'Puebla', pueblo_originario: 'Popoloca', tecnica_principal: 'Tejido de palma', estado_verificacion: 'aprobado', created_at: fecha,
+    estado: 'Puebla', direccion: 'Calle Independencia 7, San Gabriel Chilac, Puebla. C.P. 73960', referencias_direccion: 'Taller al lado de la gasolinera', latitud: null, longitud: null, pueblo_originario: 'Popoloca', tecnica_principal: 'Tejido de palma', estado_verificacion: 'aprobado', created_at: fecha,
   },
   {
     id: uid(14), nombre_completo: 'Tomás Vázquez Bonilla', correo: 'lana.hueyapan@correo.mx', telefono: '2313325561',
     nombre_taller: 'Taller Hueyapan', identificacion_oficial: 'VABT810315HPLZNM04', comunidad: 'Hueyapan',
-    estado: 'Puebla', pueblo_originario: 'Nahua', tecnica_principal: 'Telar de pedal', estado_verificacion: 'aprobado', created_at: fecha,
+    estado: 'Puebla', direccion: 'Calle Hidalgo 32, Hueyapan, Puebla. C.P. 73995', referencias_direccion: 'Casa azul con telar en el patio', latitud: null, longitud: null, pueblo_originario: 'Nahua', tecnica_principal: 'Telar de pedal', estado_verificacion: 'aprobado', created_at: fecha,
   },
   {
     id: uid(15), nombre_completo: 'Ernestina Castillo Flores', correo: 'madera.chignahuapan@correo.mx', telefono: '7971123094',
     nombre_taller: 'Madera Viva', identificacion_oficial: 'CAFE900118MPLSLR01', comunidad: 'Chignahuapan',
-    estado: 'Puebla', pueblo_originario: 'Nahua', tecnica_principal: 'Tallado en madera', estado_verificacion: 'pendiente', created_at: fecha,
+    estado: 'Puebla', direccion: 'Calle Juárez 15, Chignahuapan, Puebla. C.P. 73300', referencias_direccion: 'Cerca del lago, casa con taller de madera', latitud: null, longitud: null, pueblo_originario: 'Nahua', tecnica_principal: 'Tallado en madera', estado_verificacion: 'pendiente', created_at: fecha,
   },
   {
     id: uid(16), nombre_completo: 'Aurelia Bautista Ruiz', correo: 'tapetes.teotitlan@correo.mx', telefono: '9515240318',
     nombre_taller: 'Tapetes Gueendxi', identificacion_oficial: 'BARA750630MOCTZR09', comunidad: 'Teotitlán del Valle',
-    estado: 'Oaxaca', pueblo_originario: 'Zapoteco', tecnica_principal: 'Telar de pedal', estado_verificacion: 'aprobado', created_at: fecha,
+    estado: 'Oaxaca', direccion: 'Calle Victoria 9, Barrio del Carmen, Teotitlán del Valle, Oaxaca. C.P. 70420', referencias_direccion: 'Taller familiar con tapetes en el patio', latitud: null, longitud: null, pueblo_originario: 'Zapoteco', tecnica_principal: 'Telar de pedal', estado_verificacion: 'aprobado', created_at: fecha,
   },
 ];
 
@@ -50,7 +50,9 @@ export const VERIFICACIONES = PRODUCTORES.filter((p) => p.estado_verificacion ==
   productor_id: p.id,
   promotor_id: uid(1),
   estado: 'aprobado' as const,
-  observaciones: `Visita al taller en ${p.comunidad}: identidad y proceso artesanal comprobados`,
+  observaciones: `Visita personal al domicilio en ${p.comunidad}: identidad y proceso artesanal comprobados`,
+  visita_realizada: true,
+  fecha_visita: new Date(fecha).toISOString(),
 }));
 
 interface PiezaSemilla {

@@ -11,6 +11,8 @@ const CAMPOS: { name: string; etiqueta: string; ayuda?: string; type?: string }[
   { name: 'identificacion_oficial', etiqueta: 'CURP o clave de elector (INE)', ayuda: '18 caracteres, como aparece en tu documento' },
   { name: 'nombre_taller', etiqueta: 'Nombre del taller' },
   { name: 'comunidad', etiqueta: 'Comunidad' },
+  { name: 'direccion', etiqueta: 'Dirección donde vives o está tu taller', ayuda: 'Calle, número, colonia y código postal. Un verificador irá personalmente a conocerte.' },
+  { name: 'referencias_direccion', etiqueta: 'Referencias para encontrarte (opcional)', ayuda: 'Ej. Casa azul, frente a la iglesia, entre las calles 3 y 5' },
   { name: 'pueblo_originario', etiqueta: 'Pueblo originario', ayuda: 'Ej. Nahua, Mixteco, Totonaco' },
   { name: 'tecnica_principal', etiqueta: 'Técnica principal', ayuda: 'Ej. Telar de cintura, barro bruñido' },
   { name: 'telefono', etiqueta: 'Teléfono (10 dígitos)', type: 'tel' },
@@ -54,7 +56,8 @@ export default function RegistroProductor() {
       <p className="eyebrow-accent">Únete a RaicesMX</p>
       <h1 className="titulo mt-3">Registro de artesano</h1>
       <p className="plomo mt-4">
-        Cuéntanos quién eres y qué haces. Un verificador visitará tu taller antes de que tus piezas aparezcan en la tienda.
+        Cuéntanos quién eres, qué haces y dónde está tu taller. Un verificador irá personalmente a tu domicilio para
+        confirmar que eres real antes de que tus piezas aparezcan en la tienda.
       </p>
 
       <form onSubmit={enviar} className="mt-10 space-y-10" noValidate>
@@ -68,8 +71,8 @@ export default function RegistroProductor() {
         </fieldset>
 
         <fieldset className="space-y-8">
-          <legend className="regla-accent w-full pb-3 font-display text-2xl font-semibold text-secundaria">Tu taller</legend>
-          {CAMPOS.slice(2, 6).map((c) => (
+          <legend className="regla-accent w-full pb-3 font-display text-2xl font-semibold text-secundaria">Tu taller y dónde encontrarte</legend>
+          {CAMPOS.slice(2, 7).map((c) => (
             <Campo key={c.name} etiqueta={c.etiqueta} ayuda={c.ayuda} error={errores[c.name]?.[0]}>
               <input name={c.name} type={c.type ?? 'text'} className="input" required />
             </Campo>
@@ -85,7 +88,7 @@ export default function RegistroProductor() {
 
         <fieldset className="space-y-8">
           <legend className="regla-accent w-full pb-3 font-display text-2xl font-semibold text-secundaria">Cómo contactarte</legend>
-          {CAMPOS.slice(6).map((c) => (
+          {CAMPOS.slice(7).map((c) => (
             <Campo key={c.name} etiqueta={c.etiqueta} ayuda={c.ayuda} error={errores[c.name]?.[0]}>
               <input name={c.name} type={c.type ?? 'text'} className="input" required />
             </Campo>

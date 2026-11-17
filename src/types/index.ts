@@ -16,6 +16,10 @@ export interface Productor {
   identificacion_oficial: string;
   comunidad: string;
   estado: string;
+  direccion: string;
+  referencias_direccion: string | null;
+  latitud: number | null;
+  longitud: number | null;
   pueblo_originario: string;
   tecnica_principal: string;
   estado_verificacion: EstadoVerificacion;
@@ -130,6 +134,15 @@ export interface PedidoCreado {
   monto_comision: number;
   costo_envio: number;
   total: number;
+}
+
+export interface DatosVerificacion {
+  estado: EstadoVerificacion;
+  observaciones?: string;
+  visita_realizada: boolean;
+  fecha_visita?: string;
+  latitud_visita?: number;
+  longitud_visita?: number;
 }
 
 export interface EventoBitacora {

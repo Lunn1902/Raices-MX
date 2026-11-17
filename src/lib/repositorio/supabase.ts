@@ -10,7 +10,7 @@ import type { Repositorio } from './tipos';
 const sb = () => supabaseServidor();
 
 const PRODUCTOR_SELECT =
-  'usuario_id, nombre_taller, identificacion_oficial, comunidad, estado, pueblo_originario, tecnica_principal, estado_verificacion, created_at, usuarios(nombre_completo, correo, telefono)';
+  'usuario_id, nombre_taller, identificacion_oficial, comunidad, estado, direccion, referencias_direccion, latitud, longitud, pueblo_originario, tecnica_principal, estado_verificacion, created_at, usuarios(nombre_completo, correo, telefono)';
 
 interface FilaProductor {
   usuario_id: string;
@@ -18,6 +18,10 @@ interface FilaProductor {
   identificacion_oficial: string;
   comunidad: string;
   estado: string;
+  direccion: string;
+  referencias_direccion: string | null;
+  latitud: number | null;
+  longitud: number | null;
   pueblo_originario: string;
   tecnica_principal: string;
   estado_verificacion: Productor['estado_verificacion'];
@@ -57,7 +61,8 @@ export const repositorioSupabase: Repositorio = {
     fallo(e1, 'Registro de usuario');
     const { error: e2 } = await sb().from('perfiles_productor').insert({
       usuario_id: p.id, nombre_taller: p.nombre_taller, identificacion_oficial: p.identificacion_oficial,
-      comunidad: p.comunidad, estado: p.estado, pueblo_originario: p.pueblo_originario,
+      comunidad: p.comunidad, estado: p.estado, direccion: p.direccion,
+      referencias_direccion: p.referencias_direccion ?? null, pueblo_originario: p.pueblo_originario,
       tecnica_principal: p.tecnica_principal, estado_verificacion: 'pendiente',
     });
     if (e2) {
@@ -88,12 +93,17 @@ export const repositorioSupabase: Repositorio = {
     return (count ?? 0) > 0;
   },
 
-  async registrarVerificacion(productorId, promotorId, estado, observaciones) {
+  async registrarVerificacion(productorId, promotorId, datos) {
     const { error: e1 } = await sb().from('verificaciones_productor').insert({
-      productor_id: productorId, promotor_id: promotorId, estado, observaciones: observaciones ?? null,
+      productor_id: productorId, promotor_id: promotorId, estado: datos.estado,
+      observaciones: datos.observaciones ?? null,
+      visita_realizada: datos.visita_realizada,
+      fecha_visita: datos.visita_realizada ? datos.fecha_visita ?? new Date().toISOString() : null,
+      latitud_visita: datos.latitud_visita ?? null,
+      longitud_visita: datos.longitud_visita ?? null,
     });
     fallo(e1, 'Registro de verificación');
-    const { error: e2 } = await sb().from('perfiles_productor').update({ estado_verificacion: estado }).eq('usuario_id', productorId);
+    const { error: e2 } = await sb().from('perfiles_productor').update({ estado_verificacion: datos.estado }).eq('usuario_id', productorId);
     fallo(e2, 'Actualización de verificación');
     const p = await this.obtenerProductor(productorId);
     if (!p) throw new ErrorNegocio(404, 'Productor no encontrado');

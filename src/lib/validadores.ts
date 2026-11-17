@@ -22,15 +22,27 @@ export const esquemaRegistroProductor = z.object({
     .refine((v) => CURP.test(v) || CLAVE_ELECTOR_INE.test(v), 'Ingresa una CURP o clave de elector (INE) válida'),
   comunidad: requerido('La comunidad'),
   estado: estadoMx,
+  direccion: z.string().trim().min(10, 'Escribe la dirección completa donde vives o donde está tu taller'),
+  referencias_direccion: z.string().trim().max(300).optional(),
   pueblo_originario: requerido('El pueblo originario'),
   tecnica_principal: requerido('La técnica'),
 });
 export type RegistroProductor = z.infer<typeof esquemaRegistroProductor>;
 
-export const esquemaVerificacion = z.object({
-  estado: z.enum(['aprobado', 'rechazado']),
-  observaciones: z.string().trim().max(500).optional(),
-});
+// CU-01: el verificador solo puede aprobar si acudió personalmente al domicilio
+export const esquemaVerificacion = z
+  .object({
+    estado: z.enum(['aprobado', 'rechazado']),
+    observaciones: z.string().trim().max(500).optional(),
+    visita_realizada: z.boolean().default(false),
+    fecha_visita: z.iso.datetime().optional(),
+    latitud_visita: z.coerce.number().min(-90).max(90).optional(),
+    longitud_visita: z.coerce.number().min(-180).max(180).optional(),
+  })
+  .refine((d) => d.estado !== 'aprobado' || d.visita_realizada === true, {
+    message: 'Debes registrar la visita personal antes de aprobar al artesano',
+    path: ['visita_realizada'],
+  });
 
 // CU-04: los 9 campos de la ficha de origen (la fotografía se valida aparte)
 export const esquemaFichaOrigen = z.object({

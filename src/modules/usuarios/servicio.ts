@@ -14,6 +14,9 @@ export async function registrarProductor(entrada: unknown, ip: string | null): P
   const productor = await repo().crearProductor({
     ...datos,
     id: crypto.randomUUID(),
+    latitud: null,
+    longitud: null,
+    referencias_direccion: datos.referencias_direccion ?? null,
     estado_verificacion: 'pendiente',
     created_at: new Date().toISOString(),
   });
@@ -27,16 +30,21 @@ export async function registrarProductor(entrada: unknown, ip: string | null): P
 export const listarProductores = (estado?: EstadoVerificacion) => repo().listarProductores(estado);
 
 export async function verificarProductor(id: string, entrada: unknown, ip: string | null) {
-  const { estado, observaciones } = esquemaVerificacion.parse(entrada);
+  const datos = esquemaVerificacion.parse(entrada);
   const actual = await repo().obtenerProductor(id);
   if (!actual) throw new ErrorNegocio(404, 'Productor no encontrado');
 
   const promotorId = USUARIOS_DEMO.promotor;
-  const productor = await repo().registrarVerificacion(id, promotorId, estado, observaciones);
+  const productor = await repo().registrarVerificacion(id, promotorId, datos);
   await auditar({
     usuario_id: promotorId, rol: 'promotor', accion: 'verificar_productor', entidad: 'perfiles_productor',
     entidad_id: id, valor_anterior: { estado_verificacion: actual.estado_verificacion },
-    valor_nuevo: { estado_verificacion: estado, observaciones }, ip_origen: ip,
+    valor_nuevo: {
+      estado_verificacion: datos.estado,
+      visita_realizada: datos.visita_realizada,
+      observaciones: datos.observaciones,
+    },
+    ip_origen: ip,
   });
   return productor;
 }
