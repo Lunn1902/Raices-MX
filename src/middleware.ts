@@ -96,6 +96,8 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  // Excluir archivos estáticos: si el middleware intercepta /img/*.jpg,
+  // next/image recibe HTML en vez del binario y falla con 500.
+  matcher: ['/((?!_next/|img/|piezas/|favicon.ico|.*\\.[a-zA-Z0-9]+$).*)'],
 };
 
