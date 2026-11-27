@@ -2,7 +2,10 @@ import { z } from 'zod';
 import { NOMBRES_ESTADOS } from '@/lib/estados';
 import { CATEGORIAS } from '@/types';
 
-const requerido = (campo: string) => z.string().trim().min(1, `${campo} es obligatorio`);
+// Concordancia del mensaje con el artículo del campo: "La comunidad es obligatoria", "Los materiales son obligatorios"
+const obligatorio = (campo: string) =>
+  campo.startsWith('Los ') ? 'son obligatorios' : campo.startsWith('Las ') ? 'son obligatorias' : campo.startsWith('La ') ? 'es obligatoria' : 'es obligatorio';
+const requerido = (campo: string) => z.string().trim().min(1, `${campo} ${obligatorio(campo)}`);
 
 const CURP = /^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]\d$/;
 const CLAVE_ELECTOR_INE = /^[A-Z]{6}\d{8}[HM]\d{3}$/;

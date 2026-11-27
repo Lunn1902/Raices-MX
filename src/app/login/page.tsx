@@ -1,11 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight, ShieldCheck } from 'lucide-react';
 import { supabaseNavegador } from '@/lib/supabase/navegador';
 
 export default function LoginPage() {
+  const [error, setError] = useState('');
   return (
     <div className="grid gap-12 lg:grid-cols-[1fr_1fr] lg:gap-20">
       {/* Panel de marca: foto de una artesana en Oaxaca sobre verde bosque */}
@@ -69,9 +71,16 @@ export default function LoginPage() {
             const supabase = supabaseNavegador();
             const { error } = await supabase.auth.signInWithPassword({ email, password });
             if (error) {
-              alert(error.message);
+              setError(
+                /invalid login/i.test(error.message)
+                  ? 'Correo o contraseña incorrectos.'
+                  : /email not confirmed/i.test(error.message)
+                    ? 'Tu correo todavía no está confirmado.'
+                    : 'No se pudo iniciar sesión. Intenta de nuevo.',
+              );
               return;
             }
+            setError('');
             const map: Record<string, string> = {
               productor: '/productor',
               promotor: '/promotor',
@@ -102,6 +111,11 @@ export default function LoginPage() {
             <input id="password" name="password" type="password" required className="input" autoComplete="current-password" placeholder="Tu contraseña" />
           </div>
 
+          {error && (
+            <p role="alert" className="border-l-4 border-terciaria pl-4 text-sm text-terciaria">
+              {error}
+            </p>
+          )}
           <div className="flex flex-wrap items-center gap-5 pt-2">
             <button className="btn-accent" type="submit">Entrar <ArrowUpRight className="size-4" /></button>
             <Link href="/olvide-password" className="enlace text-sm">Olvidé mi contraseña</Link>
