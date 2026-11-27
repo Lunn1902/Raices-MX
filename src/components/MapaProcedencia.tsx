@@ -25,12 +25,13 @@ export function MapaProcedencia({ conteos, seleccionado }: { conteos: ConteoEsta
               </span>
             );
           }
-          const opacidad = 0.35 + 0.65 * (c.piezas / max);
+          // opacidad mínima de 0.75 para que el texto blanco conserve un contraste de al menos 4.5:1
+          const opacidad = 0.75 + 0.25 * (c.piezas / max);
           return (
             <Link
               key={e.clave}
               title={titulo}
-              style={{ ...posicion, backgroundColor: `rgb(27 69 50 / ${opacidad})` }}
+              style={{ ...posicion, color: '#ffffff', backgroundColor: `rgb(27 69 50 / ${opacidad})` }}
               href={activo ? '/catalogo' : `/catalogo?estado=${encodeURIComponent(e.nombre)}`}
               className={`${clase} text-white hover:ring-2 hover:ring-secundaria`}
             >

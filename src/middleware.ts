@@ -37,6 +37,22 @@ export async function middleware(req: NextRequest) {
 
   const { pathname } = req.nextUrl;
 
+  // Las cuentas del equipo (administrador y promotor) solo las crea un administrador.
+  const registrosDelEquipo = ['/registro-admin', '/registro-promotor'];
+  if (registrosDelEquipo.includes(pathname)) {
+    if (!user) {
+      const url = new URL('/login', req.url);
+      url.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(url);
+    }
+    const { data: perfil } = await perfilSupabase()
+      .from('usuarios')
+      .select('rol')
+      .eq('auth_id', user.id)
+      .maybeSingle();
+    if (perfil?.rol !== 'admin') return NextResponse.redirect(new URL('/', req.url));
+  }
+
   // Rutas públicas. '/registro' cubre registro-productor, registro-promotor,
   // registro-admin, registro-comprador-b2c/b2b (todas empiezan con '/registro').
   const publicPrefixes = ['/login', '/registro', '/catalogo', '/verificar', '/api'];

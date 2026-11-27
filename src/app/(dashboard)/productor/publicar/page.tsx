@@ -16,8 +16,8 @@ interface Publicada {
 
 // CU-04 + CU-05: ficha de origen con los 9 campos obligatorios y emisión del sello QR
 export default function PublicarPieza() {
-  const [productores, setProductores] = useState<Productor[]>([]);
   const [productor, setProductor] = useState<Productor | null>(null);
+  const [cargado, setCargado] = useState(false);
   const [precio, setPrecio] = useState('');
   const [errores, setErrores] = useState<ErroresCampos>({});
   const [mensaje, setMensaje] = useState('');
@@ -25,12 +25,11 @@ export default function PublicarPieza() {
   const [publicada, setPublicada] = useState<Publicada | null>(null);
 
   useEffect(() => {
-    fetch('/api/v1/productores?estado=aprobado')
+    // La pieza siempre se publica a nombre del productor con la sesión iniciada
+    fetch('/api/v1/perfil')
       .then((r) => r.json())
-      .then((lista: Productor[]) => {
-        setProductores(lista);
-        setProductor(lista[0] ?? null);
-      });
+      .then((d: { productor: Productor | null }) => setProductor(d.productor ?? null))
+      .finally(() => setCargado(true));
   }, []);
 
   async function enviar(e: FormEvent<HTMLFormElement>) {
@@ -69,6 +68,24 @@ export default function PublicarPieza() {
     );
   }
 
+  if (!cargado) return <p className="plomo mx-auto max-w-2xl py-10">Cargando…</p>;
+
+  // RF: una cuenta pendiente (o rechazada) no puede publicar
+  if (productor?.estado_verificacion !== 'aprobado') {
+    return (
+      <div className="regla-accent mx-auto max-w-md space-y-4 py-10 text-center">
+        <h1 className="font-display text-3xl font-semibold text-secundaria">Aún no puedes publicar</h1>
+        <p className="text-secundaria">
+          Tu cuenta está en estado <strong>{productor?.estado_verificacion ?? 'sin perfil de productor'}</strong>. Podrás
+          publicar piezas cuando un promotor apruebe tu registro.
+        </p>
+        <Link href="/productor" className="btn-sec">
+          Volver a mi panel
+        </Link>
+      </div>
+    );
+  }
+
   const err = (campo: string) => errores[campo]?.[0];
   const precioNum = Number(precio);
 
@@ -78,18 +95,9 @@ export default function PublicarPieza() {
       <h1 className="titulo mt-3">Publicar pieza</h1>
       <p className="plomo mt-4">Los 9 datos de la ficha de origen son obligatorios y quedan firmados en el sello QR.</p>
 
-      {/* key fuerza a reiniciar los valores precargados al cambiar de productor */}
-      <form key={productor?.id ?? 'sin'} onSubmit={enviar} className="space-y-4" noValidate>
+            <form key={productor?.id ?? 'sin'} onSubmit={enviar} className="space-y-4" noValidate>
         <section className="regla space-y-8 pt-6">
-          <Campo etiqueta="Publicar como" error={err('productor_id')} ayuda="Solo aparecen productores verificados por un promotor">
-            <select name="productor_id" className="input" value={productor?.id ?? ''} onChange={(e) => setProductor(productores.find((p) => p.id === e.target.value) ?? null)}>
-              {productores.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.nombre_completo} — {p.nombre_taller}
-                </option>
-              ))}
-            </select>
-          </Campo>
+          <input type="hidden" name="productor_id" value={productor?.id ?? ''} />
           <Campo etiqueta="Nombre de la pieza" error={err('nombre')}>
             <input name="nombre" className="input" />
           </Campo>

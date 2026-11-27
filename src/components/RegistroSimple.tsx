@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
-import { supabaseNavegador } from '@/lib/supabase/navegador';
 
 export function RegistroSimple({ rol, titulo, descripcion }: {
   rol: 'promotor' | 'admin';
@@ -17,26 +16,21 @@ export function RegistroSimple({ rol, titulo, descripcion }: {
     e.preventDefault();
     setLoading(true);
     setMsg('');
-    const form = new FormData(e.currentTarget);
+    const formEl = e.currentTarget;
+    const form = new FormData(formEl);
     const email = String(form.get('email') || '');
     const password = String(form.get('password') || '');
     const nombre = String(form.get('nombre_completo') || '');
 
-    const supabase = supabaseNavegador();
-    const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { nombre_completo: nombre, rol } } });
-    if (error) {
-      setMsg(error.message);
-      setLoading(false);
-      return;
-    }
-    if (data.user) {
-      await fetch('/api/v1/usuarios', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ auth_id: data.user.id, correo: email, nombre_completo: nombre, rol, correo_confirmado: true })
-      });
-    }
-    setMsg('Listo. Revisa tu correo para confirmar tu cuenta.');
+    // La cuenta la crea el servidor, que exige sesión de administrador
+    const r = await fetch('/api/v1/usuarios', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, nombre_completo: nombre, rol }),
+    });
+    const cuerpo = await r.json().catch(() => ({}));
+    setMsg(r.ok ? `Cuenta creada: ${email}` : cuerpo.error ?? 'No se pudo crear la cuenta');
+    if (r.ok) formEl.reset();
     setLoading(false);
   }
 

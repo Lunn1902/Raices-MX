@@ -66,13 +66,13 @@ export function Encabezado() {
   return (
     <header className="sticky top-0 z-20 border-b border-secundaria/15 bg-fondo/95 backdrop-blur-sm">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 gap-y-3 px-5 py-4 sm:px-8">
-        <Link href="/" className="font-display text-2xl font-semibold tracking-tight text-secundaria">
+        <Link href="/" className="inline-flex min-h-11 items-center font-display text-2xl font-semibold tracking-tight text-secundaria">
           Raices<span className="text-terciaria">MX</span>
         </Link>
 
         <nav aria-label="Navegación principal" className="order-3 flex w-full flex-wrap items-center gap-x-6 gap-y-2 text-sm sm:order-2 sm:w-auto">
           {enlaces.map((e) => (
-            <Link key={`${e.href}-${e.texto}`} href={e.href} className="text-secundaria transition-colors hover:text-terciaria">
+            <Link key={`${e.href}-${e.texto}`} href={e.href} className="inline-flex min-h-11 items-center text-secundaria transition-colors hover:text-terciaria">
               {e.texto}
             </Link>
           ))}

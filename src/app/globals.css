@@ -47,11 +47,11 @@
   --color-fondo-claro: #F5EDDC; /* variacion del lienzo */
   --color-secundaria: #1B4532;  /* 30% - verde bosque: texto y estructura */
   --color-secundaria-oscuro: #132a20;
-  --color-secundaria-suave: #6d8a7c; /* verde atenuado para texto secundario */
-  --color-terciaria: #EE4129;   /* 10% - coral: acentos con intencion */
-  --color-terciaria-suave: #f4775f;
+  --color-secundaria-suave: #48604f; /* verde atenuado para texto secundario */
+  --color-terciaria: #AE2B16;   /* 10% - coral: acentos con intencion */
+  --color-terciaria-suave: #f99a85;
   --color-tinta: #1B4532;
-  --color-tinta-clara: #556d5f;
+  --color-tinta-clara: #48604f;
   --font-sans: "Supreme", system-ui, sans-serif;
   --font-display: "Chubbo", Georgia, serif;
 }
@@ -131,6 +131,7 @@ body {
   /* --- Formularios: campos sobre el fondo, sin cajas --- */
   .input {
     @apply w-full rounded-none border-0 border-b border-secundaria/30 bg-transparent px-0 py-3 text-base text-secundaria outline-none transition-colors placeholder:text-secundaria-suave focus:border-terciaria focus:ring-0;
+    min-height: 2.75rem; /* WCAG 2.2 · 2.5.8: objetivo táctil de al menos 24 px */
   }
   .label {
     @apply mb-2 block text-[11px] font-semibold uppercase tracking-[0.2em] text-secundaria;
